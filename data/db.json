@@ -1,0 +1,161 @@
+{
+  "users": [
+    {
+      "id": "6eb1630f-aa55-4ba4-9f5b-4cb64090b77c",
+      "name": "Mebalabet kuparlang Nongkynrih",
+      "email": "mnmebalabet@gmail.com",
+      "passwordHash": "$2b$12$zmS1oGC/FjcDjIUsbCMgyeKQl7cTv.CVExdLdX2fpNh2Wh.M91KeG",
+      "role": "admin",
+      "createdAt": "2026-09-12T07:21:35.556Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "31218b59-8369-4318-8eca-434a6e4a706a",
+      "name": "Invoicely — invoicing app license",
+      "description": "A lifetime license for a desktop invoicing app built for freelancers: recurring billing, PDF export, and multi-currency support.",
+      "price": 49,
+      "category": "software",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Northgate Labs",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    },
+    {
+      "id": "c9ead8c4-24b0-4515-835c-0f48411bc28c",
+      "name": "Founder pitch deck template",
+      "description": "A 24-slide fundraising deck built in a clean, investor-tested structure. Fully editable in Keynote, PowerPoint, and Figma.",
+      "price": 24,
+      "category": "templates",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Studio Verse",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    },
+    {
+      "id": "25720f16-d688-4237-ac3e-1a8d1cc3ff8b",
+      "name": "React from first principles",
+      "description": "A 9-hour video course covering React fundamentals through to custom hooks and performance profiling, with downloadable project files.",
+      "price": 89,
+      "category": "courses",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Priya Raman",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    },
+    {
+      "id": "c4615694-9658-4518-9afd-d1a8d1640809",
+      "name": "Northline icon set — 480 icons",
+      "description": "A consistent, hand-drawn icon set covering product, finance and communication use cases. Delivered as SVG and Figma components.",
+      "price": 32,
+      "category": "design",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Studio Verse",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    },
+    {
+      "id": "600077e5-72c3-4778-897d-3b06c3a31910",
+      "name": "One-hour logo design consult",
+      "description": "A live 60-minute working session to sketch and refine logo directions for your brand, followed by a written summary and next steps.",
+      "price": 65,
+      "category": "services",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Marcus Feld",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    },
+    {
+      "id": "dee95253-e345-44f4-8f31-fd386b43c253",
+      "name": "Formcraft — form builder plugin",
+      "description": "A lightweight form-building plugin for static sites with conditional logic, spam protection and webhook delivery.",
+      "price": 19,
+      "category": "plugins",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Northgate Labs",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    },
+    {
+      "id": "a85fe035-8e1a-4f42-9ab6-d0061dc3cb89",
+      "name": "Book-keeping spreadsheet",
+      "description": "A pre-built Google Sheets and Excel template for tracking income, expenses and quarterly tax estimates for freelancers.",
+      "price": 15,
+      "category": "templates",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Dana Whitfield",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    },
+    {
+      "id": "5d597285-4de5-4f1b-9d92-1ae28707f55f",
+      "name": "SQL for data analysis",
+      "description": "A practical course on writing efficient SQL for reporting and analysis, using real anonymized datasets throughout.",
+      "price": 59,
+      "category": "courses",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Priya Raman",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    },
+    {
+      "id": "2c68ebcd-f5c7-4bba-a1ae-d22778c1c8ce",
+      "name": "Focusgrid — task manager license",
+      "description": "A calm, keyboard-first task manager for individuals. Includes offline sync and a companion mobile app.",
+      "price": 39,
+      "category": "software",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Dana Whitfield",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    },
+    {
+      "id": "1f1dcbfa-5c77-44ec-8c3c-c6b449b813d0",
+      "name": "Editorial photo pack — 120 shots",
+      "description": "A curated set of 120 high-resolution editorial-style stock photographs for use in publications and marketing.",
+      "price": 28,
+      "category": "design",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Marcus Feld",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    },
+    {
+      "id": "1cea748c-b2b3-41e4-a6f4-8b003ee1da0b",
+      "name": "Copy audit for your landing page",
+      "description": "A written line-by-line audit of your landing page copy with specific rewrite suggestions, delivered within 3 business days.",
+      "price": 120,
+      "category": "services",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Dana Whitfield",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    },
+    {
+      "id": "5df6d9cf-8676-457e-907c-c7e42952c01a",
+      "name": "Tablesort — data grid plugin",
+      "description": "A dependency-free sortable, filterable data grid plugin for JavaScript projects. Under 8kb gzipped.",
+      "price": 22,
+      "category": "plugins",
+      "fileName": null,
+      "sellerId": null,
+      "sellerName": "Northgate Labs",
+      "status": "approved",
+      "createdAt": "2026-09-11T17:43:35.956Z"
+    }
+  ],
+  "orders": [],
+  "quotes": [],
+  "auditLogs": []
+}
