@@ -745,6 +745,21 @@ function heroSearch(e){
   return false;
 }
 
+// Service catalog placeholder set. The quote workflow is production-safe,
+// but the six official MN Group service names still need to be supplied
+// by the business owner before public launch; the ids must match server.js.
+// (Declared here, ahead of renderCatGrid()/renderServiceGrid() below, because
+// those are invoked immediately at parse time and previously threw a
+// ReferenceError trying to read this const before its declaration ran.)
+const SERVICE_LINES = [
+  { id:'web-development', label:'Web Development', blurb:'Custom websites and web applications built to your spec.' },
+  { id:'mobile-development', label:'Mobile Development', blurb:'Native and cross-platform mobile apps for iOS and Android.' },
+  { id:'design-branding', label:'Design & Branding', blurb:'Brand identity, UI/UX design, and visual design systems.' },
+  { id:'digital-marketing', label:'Digital Marketing', blurb:'SEO, paid campaigns, and growth strategy.' },
+  { id:'consulting-strategy', label:'Consulting & Strategy', blurb:'Technical advisory and product strategy engagements.' },
+  { id:'managed-support', label:'Managed Support', blurb:'Ongoing maintenance, support, and monitoring.' },
+];
+
 /* ================= CATEGORY TILES ================= */
 function renderCatGrid(){
   const g = document.getElementById('catGrid'); g.innerHTML = '';
@@ -1119,17 +1134,6 @@ function openSell(e, custom){
 }
 
 /* ================= SERVICES / QUOTES ================= */
-// Service catalog placeholder set. The quote workflow is production-safe,
-// but the six official MN Group service names still need to be supplied
-// by the business owner before public launch; the ids must match server.js.
-const SERVICE_LINES = [
-  { id:'web-development', label:'Web Development', blurb:'Custom websites and web applications built to your spec.' },
-  { id:'mobile-development', label:'Mobile Development', blurb:'Native and cross-platform mobile apps for iOS and Android.' },
-  { id:'design-branding', label:'Design & Branding', blurb:'Brand identity, UI/UX design, and visual design systems.' },
-  { id:'digital-marketing', label:'Digital Marketing', blurb:'SEO, paid campaigns, and growth strategy.' },
-  { id:'consulting-strategy', label:'Consulting & Strategy', blurb:'Technical advisory and product strategy engagements.' },
-  { id:'managed-support', label:'Managed Support', blurb:'Ongoing maintenance, support, and monitoring.' },
-];
 function renderServiceGrid(){
   const g = document.getElementById('serviceGrid'); if(!g) return; g.innerHTML='';
   SERVICE_LINES.forEach(s=>{
