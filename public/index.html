@@ -583,11 +583,11 @@
   </div>
 </div>
 
-<div class="modal-center" id="authModal"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="modal-inner" id="authContent"></div></div></div>
-<div class="modal-center" id="pdModal"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div id="pdContent"></div></div></div>
-<div class="modal-center" id="checkoutModal"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="steps"><div class="step-dot active" id="stepDot1"></div><div class="step-dot" id="stepDot2"></div></div><div class="modal-inner" id="checkoutContent"></div></div></div>
-<div class="modal-center" id="sellModal"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="modal-inner" id="sellContent"></div></div></div>
-<div class="modal-center" id="ordersModal"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="modal-inner" id="ordersContent"></div></div></div>
+<div class="modal-center" id="authModal" onclick="closeOnBackdrop(event)"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="modal-inner" id="authContent"></div></div></div>
+<div class="modal-center" id="pdModal" onclick="closeOnBackdrop(event)"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div id="pdContent"></div></div></div>
+<div class="modal-center" id="checkoutModal" onclick="closeOnBackdrop(event)"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="steps"><div class="step-dot active" id="stepDot1"></div><div class="step-dot" id="stepDot2"></div></div><div class="modal-inner" id="checkoutContent"></div></div></div>
+<div class="modal-center" id="sellModal" onclick="closeOnBackdrop(event)"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="modal-inner" id="sellContent"></div></div></div>
+<div class="modal-center" id="ordersModal" onclick="closeOnBackdrop(event)"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="modal-inner" id="ordersContent"></div></div></div>
 
 <div class="toast" id="toast"></div>
 
@@ -722,6 +722,7 @@ document.addEventListener('click', (e)=>{
 });
 function filterCat(e, id){
   if(e) e.preventDefault();
+  closeAllOverlays();
   state.cat = id; state.search='';
   document.getElementById('searchInput').value='';
   const hsi = document.getElementById('heroSearchInput'); if(hsi) hsi.value='';
@@ -876,7 +877,7 @@ function closeAllOverlays(){
   document.getElementById('sellModal').classList.remove('open');
   document.getElementById('authModal').classList.remove('open');
   document.getElementById('ordersModal').classList.remove('open');
-  document.body.style.overflow=''; state.overlay=null;
+  document.body.style.overflow=''; state.overlay=null; state.activeProduct=null;
 }
 function showOverlay(which){
   closeAllOverlays();
@@ -884,6 +885,11 @@ function showOverlay(which){
   document.getElementById(which).classList.add('open');
   document.body.style.overflow='hidden'; state.overlay=which;
 }
+/* Full-screen centered modals (product/checkout/auth/sell/orders) sit above the
+   scrim and, unlike the cart drawer, had no way to dismiss by tapping the dimmed
+   backdrop — only the small close (X) button worked. This restores the same
+   click-outside-to-close behavior the cart drawer already has. */
+function closeOnBackdrop(e){ if(e.target===e.currentTarget) closeAllOverlays(); }
 
 /* ================= CART ================= */
 function addToCart(id){ state.cart[id] = (state.cart[id]||0)+1; renderGrid(); renderCart(); showToast('Added to cart'); }
