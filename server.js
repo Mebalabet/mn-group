@@ -14,6 +14,8 @@ const payments = require('./payments');
 const { canTransition } = require('./payments/orderState');
 const { canTransitionQuote } = require('./quoteState');
 const SEED_PRODUCTS = require('./db/seedData');
+const aiProvider = require('./ai/provider');
+const { buildSupportContext } = require('./ai/supportContext');
 
 const app = express();
 
@@ -117,6 +119,17 @@ const quoteLimiter = rateLimit({
   message: { error: 'Too many requests — please wait a few minutes and try again.' },
 });
 
+// /api/ai/chat is public, unauthenticated, and calls a paid external AI
+// API per request — the tightest limit of the three, since abuse here has
+// a direct dollar cost, not just a brute-force risk.
+const aiChatLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests to AI support — please wait a few minutes and try again.' },
+});
+
 function tokenFor(u) {
   return jwt.sign({ id: u.id, email: u.email, role: u.role, name: u.name }, config.jwtSecret, { expiresIn: config.jwtExpiresIn, algorithm: 'HS256' });
 }
@@ -217,6 +230,44 @@ app.get('/api/auth/me', auth, async (req, res, next) => {
 
 app.get('/api/products', async (req, res, next) => {
   try { res.json(paginate(res, await db.listApprovedProducts(), req)); } catch (err) { next(err); }
+});
+
+// Public, unauthenticated AI customer-support endpoint. Answers only from
+// buildSupportContext()'s public product/service data plus the fixed
+// system prompt (ai/systemPrompt.js) — see ai/provider.js for the actual
+// call out to the configured AI vendor. Never touches auth, orders,
+// payments, or any mutation — it can only read and reply with text.
+const AI_MAX_MESSAGES = 12; // conversation turns per request
+const AI_MAX_MESSAGE_LENGTH = 1000; // characters per message
+app.post('/api/ai/chat', aiChatLimiter, async (req, res, next) => {
+  try {
+    const { messages } = req.body || {};
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({ error: 'messages must be a non-empty array' });
+    }
+    if (messages.length > AI_MAX_MESSAGES) {
+      return res.status(400).json({ error: `Conversation is too long (maximum ${AI_MAX_MESSAGES} messages per request)` });
+    }
+    const cleanMessages = [];
+    for (const m of messages) {
+      if (!m || m.role !== 'user' || typeof m.content !== 'string') {
+        return res.status(400).json({ error: 'Each message must be a user message with string content' });
+      }
+      if (m.content.length > AI_MAX_MESSAGE_LENGTH) {
+        return res.status(400).json({ error: `Each message is limited to ${AI_MAX_MESSAGE_LENGTH} characters` });
+      }
+      cleanMessages.push({ role: 'user', content: m.content });
+    }
+    if (!aiProvider.isConfigured()) {
+      return res.status(503).json({ error: 'AI support is currently unavailable' });
+    }
+    const context = await buildSupportContext();
+    const result = await aiProvider.generateSupportReply({ messages: cleanMessages, context });
+    if (!result.ok) {
+      return res.status(502).json({ error: 'AI support is currently unavailable' });
+    }
+    res.json({ reply: result.reply });
+  } catch (err) { next(err); }
 });
 
 const PRODUCT_CATEGORIES = ['software', 'templates', 'design', 'plugins', 'courses', 'services', 'other'];

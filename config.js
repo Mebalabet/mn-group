@@ -98,6 +98,16 @@ const config = {
       failureUrl: process.env.PAYU_FAILURE_URL || null,
     },
   },
+
+  // AI customer-support assistant (see ai/provider.js). Unset (null) by
+  // default — same "runs fine with no provider configured" pattern as
+  // payments above: the /api/ai/chat endpoint stays up and responds with a
+  // friendly "unavailable" message instead of erroring or breaking the
+  // rest of the site when this isn't set.
+  ai: {
+    apiKey: process.env.AI_API_KEY || null,
+    model: process.env.AI_MODEL || 'gpt-4o-mini',
+  },
 };
 
 module.exports = config;
