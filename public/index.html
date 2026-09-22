@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MN Group — Digital Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Dark glassmorphism palette — navy/indigo base with blue → purple →
+       pink gradient accents and a gold highlight, matching the approved
+       MN Group reference. Selector names below are unchanged from the
+       prior palette; only these tokens (and a handful of literal #fff
+       surface colors that couldn't be var-driven before) changed. */
+    --navy:#0B1220; --navy-2:#151B33; --navy-3:#1E2A52;
+    --bg-1:#1e1b4b; --bg-2:#0f172a; --bg-3:#020617;
+    --gold:#fbbf24; --gold-deep:#d99a1b;
+    --accent-blue:#38bdf8; --accent-purple:#a78bfa; --accent-pink:#f472b6;
+    --grad-brand:linear-gradient(135deg, var(--accent-blue), var(--accent-purple), var(--accent-pink));
+    --glass-bg:rgba(21,27,51,0.62); --glass-bg-soft:rgba(21,27,51,0.4); --glass-border:rgba(255,255,255,0.12);
+    --paper:#0f1526; --card:rgba(30,41,59,0.55); --ink:#F1F5F9; --ink-soft:#94A3B8; --line:rgba(255,255,255,0.12);
+    --green:#22c78a; --green-bg:rgba(34,199,138,0.15); --red:#f87171;
+    --radius:14px; --radius-sm:9px;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased;
+    background:radial-gradient(circle at 15% 10%, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%) fixed;
+  }
+  h1,h2,h3,.display{ font-family:'Poppins',sans-serif; font-weight:700; margin:0; letter-spacing:-0.01em; color:var(--ink); }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; }
+  img{ display:block; }
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+  .wrap{ max-width:1200px; margin:0 auto; padding:0 20px; }
+
+  /* ---------- top strip ---------- */
+  .topstrip{ background:rgba(2,6,23,0.6); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); color:#B9C6E0; font-size:0.74rem; padding:6px 0; border-bottom:1px solid var(--glass-border); }
+  .topstrip .wrap{ display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .topstrip .left{ display:flex; gap:16px; align-items:center; }
+  .topstrip .right{ display:flex; gap:10px; align-items:center; }
+  .topstrip a:hover{ color:#fff; }
+  @media (max-width:680px){ .topstrip .left span:nth-child(2){ display:none; } }
+  @media (max-width:600px){ .auth-btn{ display:none; } }
+
+  /* ---------- header ---------- */
+  header{ position:sticky; top:0; z-index:40; }
+  .mainbar{ background:rgba(11,18,32,0.72); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid var(--glass-border); padding:14px 0; }
+  .mainbar .wrap{ display:flex; align-items:center; gap:18px; }
+  .mainbar .wrap.mainbar-sub{ flex-direction:column; align-items:stretch; gap:0; }
+  .wordmark{ display:flex; align-items:center; gap:9px; }
+  .wordmark .badge{
+    width:38px; height:38px; border-radius:10px; background:var(--grad-brand);
+    display:flex; align-items:center; justify-content:center; font-family:'Poppins',sans-serif; font-weight:800; color:#fff; font-size:1.05rem; flex-shrink:0;
+  }
+  .wordmark .txt .mark{ font-family:'Poppins',sans-serif; font-weight:800; font-size:1.2rem; line-height:1.05;
+    background:var(--grad-brand); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .wordmark .txt .tag{ font-size:0.62rem; color:var(--gold); letter-spacing:0.06em; font-weight:600; }
+  nav.cats{ display:flex; gap:4px; flex:1; overflow-x:auto; scrollbar-width:none; }
+  nav.cats::-webkit-scrollbar{ display:none; }
+  nav.cats button{ background:none; border:none; white-space:nowrap; padding:9px 12px; font-size:0.86rem; color:#CBD7EC; border-radius:999px; font-weight:500; }
+  nav.cats button.active{ background:rgba(255,255,255,0.12); color:#fff; }
+  .top-actions{ display:flex; align-items:center; gap:8px; }
+  .icon-btn{
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14); border-radius:999px;
+    width:38px; height:38px; display:flex; align-items:center; justify-content:center; position:relative; color:#fff;
+  }
+  .cart-count{
+    position:absolute; top:-6px; right:-6px; background:var(--gold); color:var(--navy); font-family:'IBM Plex Mono',monospace;
+    font-weight:700; font-size:0.64rem; min-width:17px; height:17px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 3px;
+  }
+  .sell-btn{ background:var(--grad-brand); color:#fff; border:none; border-radius:999px; padding:10px 16px; font-size:0.85rem; font-weight:700; }
+  .sell-btn:hover{ opacity:0.9; }
+  .auth-btn{ border-radius:999px; padding:9px 15px; font-size:0.82rem; font-weight:600; border:1px solid rgba(255,255,255,0.3); background:none; color:#fff; }
+  .auth-btn.solid{ background:var(--navy-3); border-color:var(--navy-3); }
+  .auth-btn.solid:hover{ background:var(--blue-hov,#2b5bc4); }
+  .subnav{ display:flex; align-items:center; gap:2px; padding:6px 0 8px; position:relative; flex-wrap:wrap; }
+  .subnav a, .subnav .cat-dropdown{ flex-shrink:0; white-space:nowrap; }
+  .subnav a, .subnav button.subnav-link{ background:none; border:none; color:#CBD7EC; font-size:0.83rem; padding:6px 10px; border-radius:6px; font-weight:500; }
+  .subnav a:hover, .subnav button.subnav-link:hover{ color:#fff; }
+  .cat-dropdown{ position:relative; }
+  .cat-dropdown-panel{
+    position:absolute; top:calc(100% + 6px); left:0; background:var(--glass-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border); border-radius:10px; box-shadow:0 16px 30px rgba(0,0,0,0.4);
+    padding:8px; min-width:190px; display:none; z-index:50;
+  }
+  .cat-dropdown-panel.open{ display:block; }
+  .cat-dropdown-panel button{ width:100%; text-align:left; background:none; border:none; padding:9px 10px; border-radius:6px; font-size:0.85rem; color:var(--ink); }
+  .cat-dropdown-panel button:hover{ background:rgba(255,255,255,0.08); }
+  .search-row{ display:none; padding:12px 0 2px; }
+  .search-row.open{ display:block; }
+  .search-row input{ width:100%; padding:11px 14px; border:1px solid var(--glass-border); border-radius:var(--radius-sm); background:var(--glass-bg-soft); font-size:0.95rem; color:var(--ink); }
+
+  /* ---------- hero (photo carousel) ---------- */
+  .hero{ position:relative; overflow:hidden; min-height:520px; color:#fff; background:var(--bg-2); }
+  .hero-slide{
+    position:absolute; inset:0; opacity:0; transition:opacity .7s ease; background-size:cover; background-position:center;
+  }
+  .hero-slide.active{ opacity:1; }
+  .hero-slide::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(100deg, rgba(2,6,23,0.94) 0%, rgba(15,23,42,0.8) 38%, rgba(30,27,75,0.4) 68%, rgba(56,189,248,0.15) 100%);
+  }
+  .hero-content{ position:relative; z-index:2; padding:56px 0 70px; }
+  .hero .eyebrow{ display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--gold); font-weight:600; }
+  .hero .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--gold); }
+  .hero h1{ font-size:clamp(2rem, 5.4vw, 3.1rem); line-height:1.1; margin-top:14px; max-width:15ch; text-shadow:0 2px 18px rgba(0,0,0,0.4); }
+  .hero h1 .accent{ background:var(--grad-brand); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero p{ max-width:44ch; color:#CBD5E1; font-size:1.02rem; line-height:1.55; margin-top:14px; }
+  .search-panel{
+    margin-top:24px; background:var(--glass-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border); border-radius:var(--radius); padding:8px; display:flex; gap:6px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.5); max-width:600px;
+  }
+  .search-panel select{ border:1px solid var(--glass-border); background:rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:0 10px; font-size:0.82rem; color:var(--ink); max-width:118px; flex-shrink:0; }
+  .search-panel input{ flex:1; border:none; background:transparent; padding:0 10px; font-size:0.92rem; color:var(--ink); min-width:0; }
+  .search-panel input::placeholder{ color:var(--ink-soft); }
+  .search-panel button{ background:var(--grad-brand); color:#fff; border:none; border-radius:var(--radius-sm); padding:0 18px; font-size:0.88rem; font-weight:700; flex-shrink:0; }
+  .badges-row{ display:flex; gap:10px; margin-top:26px; flex-wrap:wrap; }
+  .badge-item{ display:flex; align-items:center; gap:9px; min-width:150px; }
+  .badge-icon{ width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.1); border:1px solid var(--glass-border); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--accent-cyan,var(--accent-blue)); }
+  .badge-item .t1{ font-size:0.8rem; font-weight:600; color:#fff; }
+  .badge-item .t2{ font-size:0.7rem; color:#94A3B8; }
+
+  /* floating quote card */
+  .float-card{
+    position:absolute; right:40px; bottom:56px; z-index:3; background:var(--glass-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    color:var(--ink); border:1px solid var(--glass-border); border-radius:var(--radius);
+    padding:18px; width:250px; box-shadow:0 24px 50px rgba(0,0,0,0.5);
+  }
+  .float-card .ic{ width:34px; height:34px; border-radius:9px; background:var(--grad-brand); color:#fff; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+  .float-card h4{ font-size:0.95rem; }
+  .float-card p{ font-size:0.78rem; color:var(--ink-soft); margin-top:5px; line-height:1.4; }
+  .float-card button{ width:100%; margin-top:12px; background:var(--grad-brand); color:#fff; border:none; border-radius:var(--radius-sm); padding:10px; font-size:0.8rem; font-weight:700; }
+  @media (max-width:900px){ .float-card{ display:none; } }
+
+  .hero-dots{ position:absolute; left:0; right:0; bottom:20px; z-index:3; display:flex; justify-content:center; gap:7px; }
+  .hero-dot{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.4); border:none; padding:0; }
+  .hero-dot.active{ background:var(--gold); width:20px; border-radius:4px; transition:width .2s ease; }
+
+  /* ---------- stats strip ---------- */
+  .stats-strip{ background:var(--glass-bg-soft); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-bottom:1px solid var(--glass-border); }
+  .stats-grid{ display:grid; grid-template-columns:repeat(4,1fr); }
+  .stat{ text-align:center; padding:22px 10px; border-right:1px solid var(--glass-border); }
+  .stat:last-child{ border-right:none; }
+  .stat .num{ font-family:'Poppins',sans-serif; font-weight:800; font-size:1.7rem; color:var(--ink); }
+  .stat .lbl{ font-size:0.74rem; color:var(--ink-soft); margin-top:2px; }
+  @media (max-width:640px){ .stats-grid{ grid-template-columns:repeat(2,1fr); } .stat{ border-bottom:1px solid var(--glass-border); } }
+
+  /* ---------- section shell ---------- */
+  .section{ padding:40px 0; }
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:18px; gap:10px; flex-wrap:wrap; }
+  .section-head h2{ font-size:1.4rem; color:var(--ink); }
+  .section-head .view-all{ font-size:0.84rem; font-weight:600; color:var(--accent-blue); display:flex; align-items:center; gap:4px; background:none; border:none; }
+  .eyebrow-sm{ font-size:0.72rem; letter-spacing:0.08em; color:var(--gold); font-weight:700; text-transform:uppercase; }
+
+  /* ---------- category tiles (photo) ---------- */
+  .cat-grid{ display:grid; grid-template-columns:repeat(6, 1fr); gap:12px; }
+  @media (max-width:1000px){ .cat-grid{ grid-template-columns:repeat(4,1fr); } }
+  @media (max-width:620px){ .cat-grid{ grid-template-columns:repeat(3,1fr); gap:10px; } }
+  @media (max-width:420px){ .cat-grid{ grid-template-columns:repeat(2,1fr); } }
+  .cat-tile{
+    background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--glass-border); border-radius:var(--radius); padding:16px 12px 14px;
+    display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px; cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .cat-tile:hover{ transform:translateY(-4px); box-shadow:0 16px 28px rgba(0,0,0,0.4); border-color:var(--accent-purple); }
+  .cat-tile .imgwrap{ width:100%; aspect-ratio:1/1; border-radius:10px; overflow:hidden; background:rgba(255,255,255,0.05); position:relative; }
+  .cat-tile .imgwrap img{ width:100%; height:100%; object-fit:cover; }
+  .cat-tile .cbadge{
+    position:absolute; top:7px; left:7px; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; z-index:1;
+  }
+  .cat-tile .name{ font-size:0.86rem; font-weight:700; color:var(--ink); }
+  .cat-tile .count{ font-size:0.7rem; color:var(--ink-soft); }
+
+  /* ---------- trending strip ---------- */
+  .trend-scroll{ display:flex; gap:14px; overflow-x:auto; padding-bottom:8px; scroll-snap-type:x proximity; }
+  .trend-scroll::-webkit-scrollbar{ height:6px; }
+  .trend-scroll::-webkit-scrollbar-thumb{ background:var(--glass-border); border-radius:4px; }
+  .trend-card{
+    flex:0 0 210px; scroll-snap-align:start; background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--glass-border); border-radius:var(--radius);
+    overflow:hidden; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .trend-card:hover{ transform:translateY(-3px); box-shadow:0 14px 26px rgba(0,0,0,0.4); }
+  .trend-rank{
+    position:absolute; top:8px; left:8px; width:26px; height:26px; border-radius:50%; background:var(--grad-brand); color:#fff;
+    font-family:'Poppins',sans-serif; font-weight:800; font-size:0.8rem; display:flex; align-items:center; justify-content:center; z-index:2;
+  }
+  .trend-thumb{ position:relative; aspect-ratio:4/3; background:rgba(255,255,255,0.05); }
+  .trend-thumb img{ width:100%; height:100%; object-fit:cover; }
+  .trend-body{ padding:11px 12px 13px; }
+  .trend-body h4{ font-size:0.85rem; font-weight:600; line-height:1.3; color:var(--ink); }
+  .trend-body .price{ margin-top:6px; }
+
+  /* ---------- product grid ---------- */
+  .toolbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; gap:10px; flex-wrap:wrap; }
+  .result-count{ font-size:0.82rem; color:var(--ink-soft); }
+  .sort-select{ border:1px solid var(--glass-border); background:var(--glass-bg-soft); border-radius:var(--radius-sm); padding:8px 10px; font-size:0.82rem; color:var(--ink); }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:16px; }
+  .card{
+    background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--glass-border); border-radius:var(--radius); overflow:hidden;
+    display:flex; flex-direction:column; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; position:relative;
+  }
+  .card:hover{ transform:translateY(-4px); box-shadow:0 18px 30px rgba(0,0,0,0.45); border-color:var(--accent-purple); }
+  .card .thumb{ position:relative; aspect-ratio:4/3; overflow:hidden; background:rgba(255,255,255,0.05); }
+  .card .thumb img{ width:100%; height:100%; object-fit:cover; transition:transform .3s ease; }
+  .card:hover .thumb img{ transform:scale(1.06); }
+  .card .cat-chip{
+    position:absolute; top:10px; left:10px; font-size:0.66rem; font-weight:700; padding:4px 9px; border-radius:999px;
+    text-transform:uppercase; letter-spacing:0.03em; color:#fff; backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  }
+  .card .ribbon{
+    position:absolute; top:10px; right:10px; font-size:0.64rem; font-weight:700; padding:4px 9px; border-radius:999px; color:#fff;
+  }
+  .card .body{ padding:14px 14px 16px; display:flex; flex-direction:column; gap:8px; flex:1; }
+  .card h3{ font-size:0.98rem; line-height:1.3; font-weight:600; color:var(--ink); }
+  .card .seller{ font-size:0.76rem; color:var(--ink-soft); margin-top:-6px; }
+  .card .meta-row{ display:flex; align-items:center; justify-content:space-between; margin-top:2px; }
+  .price{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:1rem; color:var(--ink); }
+  .rating{ font-size:0.76rem; color:var(--ink-soft); display:flex; align-items:center; gap:3px; }
+  .rating .stars{ color:var(--gold); }
+  .add-row{ display:flex; gap:8px; }
+  .add-btn{ flex:1; background:var(--navy-3); color:#fff; border:1px solid var(--glass-border); border-radius:var(--radius-sm); padding:10px 10px; font-size:0.82rem; font-weight:600; }
+  .add-btn:hover{ background:var(--accent-purple); }
+  .add-btn.added{ background:var(--green); }
+  .empty-state{ padding:60px 20px; text-align:center; color:var(--ink-soft); border:1px dashed var(--glass-border); border-radius:var(--radius); grid-column:1/-1; }
+  .empty-state h3{ margin-bottom:6px; color:var(--ink); }
+
+  /* ---------- testimonials ---------- */
+  .testi-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  @media (max-width:800px){ .testi-grid{ grid-template-columns:1fr; } }
+  .testi-card{ background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--glass-border); border-radius:var(--radius); padding:20px; }
+  .about-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:18px; }
+  @media (max-width:900px){ .about-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:520px){ .about-grid{ grid-template-columns:1fr; } }
+  .about-card{ background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--glass-border); border-radius:var(--radius); padding:20px; }
+  .about-card .ic{ display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:10px; background:var(--grad-brand); color:#fff; margin-bottom:12px; }
+  .about-card h3{ font-size:0.95rem; font-weight:700; color:var(--ink); margin:0 0 6px; }
+  .about-card p{ font-size:0.83rem; color:var(--ink-soft); line-height:1.55; margin:0; }
+  .about-notice{ background:var(--glass-bg-soft); border:1px solid var(--glass-border); border-radius:var(--radius-sm); padding:14px 16px; margin-top:18px; font-size:0.8rem; color:var(--ink-soft); line-height:1.6; }
+  .about-notice strong{ color:var(--ink); }
+  .testi-stars{ color:var(--gold); font-size:0.85rem; }
+  .testi-quote{ font-size:0.9rem; line-height:1.55; color:var(--ink); margin-top:10px; }
+  .testi-who{ display:flex; align-items:center; gap:10px; margin-top:16px; }
+  .testi-who img{ width:38px; height:38px; border-radius:50%; object-fit:cover; }
+  .testi-who .n1{ font-size:0.84rem; font-weight:600; color:var(--ink); }
+  .testi-who .n2{ font-size:0.72rem; color:var(--ink-soft); }
+
+  /* ---------- cta panel ---------- */
+  .cta-panel{
+    background:linear-gradient(135deg, rgba(56,189,248,0.16) 0%, rgba(167,139,250,0.16) 50%, rgba(244,114,182,0.16) 100%);
+    border:1px solid var(--glass-border); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border-radius:var(--radius); padding:26px; color:#fff; display:flex; align-items:center; gap:18px; flex-wrap:wrap; justify-content:space-between;
+  }
+  .cta-panel .txt h3{ font-size:1.15rem; color:#fff; }
+  .cta-panel .txt p{ font-size:0.86rem; color:#C7D3E8; margin-top:4px; max-width:36ch; }
+  .cta-panel button{ background:var(--gold); color:var(--navy); border:none; border-radius:var(--radius-sm); padding:12px 20px; font-weight:700; font-size:0.88rem; white-space:nowrap; }
+
+  /* ---------- newsletter ---------- */
+  .newsletter{ background:var(--glass-bg-soft); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-top:1px solid var(--glass-border); border-bottom:1px solid var(--glass-border); padding:34px 0; }
+  .nl-row{ display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+  .nl-row h3{ font-size:1.1rem; }
+  .nl-row p{ font-size:0.85rem; color:var(--ink-soft); margin-top:4px; }
+  .nl-form{ display:flex; gap:8px; flex:0 0 auto; }
+  .nl-form input{ border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:var(--ink); border-radius:var(--radius-sm); padding:11px 14px; font-size:0.88rem; width:220px; }
+  .nl-form input::placeholder{ color:var(--ink-soft); }
+  .nl-form button{ background:var(--grad-brand); color:#fff; border:none; border-radius:var(--radius-sm); padding:11px 18px; font-size:0.86rem; font-weight:700; }
+
+  /* ---------- trust strip ---------- */
+  .trust-strip{ background:var(--bg-3); color:#fff; padding:28px 0; border-top:1px solid var(--glass-border); }
+  .trust-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:16px; }
+  @media (max-width:900px){ .trust-grid{ grid-template-columns:repeat(3,1fr);} }
+  @media (max-width:560px){ .trust-grid{ grid-template-columns:repeat(2,1fr);} }
+  .trust-item{ display:flex; gap:10px; align-items:flex-start; }
+  .trust-item .ic{ color:var(--gold); flex-shrink:0; margin-top:2px; }
+  .trust-item .t1{ font-size:0.82rem; font-weight:600; }
+  .trust-item .t2{ font-size:0.72rem; color:#9DAFCB; margin-top:2px; }
+
+  /* ---------- footer ---------- */
+  footer{ background:var(--bg-3); color:#B9C6E0; padding:34px 0 20px; border-top:1px solid var(--glass-border); }
+  footer .cols{ display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:24px; }
+  footer h4{ font-size:0.76rem; color:var(--gold); margin-bottom:10px; font-weight:700; letter-spacing:0.04em; }
+  footer ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; font-size:0.85rem; }
+  footer ul a:hover{ color:#fff; }
+  footer .bottom{ margin-top:24px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1); font-size:0.75rem; color:#7E8FB0; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  @media (max-width:640px){ footer .cols{ grid-template-columns:1fr; } }
+
+  /* ---------- overlays ---------- */
+  .scrim{ position:fixed; inset:0; background:rgba(2,6,23,0.7); z-index:60; opacity:0; pointer-events:none; transition:opacity .18s ease; }
+  .scrim.open{ opacity:1; pointer-events:auto; }
+  .drawer{
+    position:fixed; top:0; right:0; height:100%; width:100%; max-width:400px; background:var(--bg-2);
+    z-index:70; box-shadow:-8px 0 30px rgba(0,0,0,0.4); transform:translateX(100%); transition:transform .22s ease; display:flex; flex-direction:column;
+    border-left:1px solid var(--glass-border);
+  }
+  .drawer.open{ transform:translateX(0); }
+  .drawer-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px; border-bottom:1px solid var(--glass-border); background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+  .drawer-head h2{ font-size:1.1rem; }
+  .drawer-close{ background:rgba(255,255,255,0.06); border:1px solid var(--glass-border); width:30px; height:30px; border-radius:50%; font-size:1rem; color:var(--ink-soft); }
+  .drawer-body{ flex:1; overflow-y:auto; padding:14px 20px; }
+  .drawer-foot{ padding:16px 20px 20px; border-top:1px solid var(--glass-border); background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+  .cart-item{ display:flex; gap:12px; padding:14px 0; border-bottom:1px solid var(--glass-border); }
+  .cart-thumb{ width:56px; height:56px; border-radius:10px; flex-shrink:0; overflow:hidden; background:rgba(255,255,255,0.05); }
+  .cart-thumb img{ width:100%; height:100%; object-fit:cover; }
+  .cart-item-info{ flex:1; min-width:0; }
+  .cart-item-info h4{ font-size:0.88rem; font-weight:600; margin:0 0 3px; color:var(--ink); }
+  .cart-item-info .seller-sm{ font-size:0.7rem; color:var(--ink-soft); }
+  .qty-row{ display:flex; align-items:center; gap:8px; margin-top:8px; }
+  .qty-btn{ width:23px; height:23px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.06); color:var(--ink); border-radius:var(--radius-sm); font-size:0.85rem; display:flex; align-items:center; justify-content:center; }
+  .qty-val{ font-family:'IBM Plex Mono',monospace; font-size:0.85rem; min-width:14px; text-align:center; }
+  .remove-link{ font-size:0.74rem; color:var(--red); text-decoration:underline; margin-left:auto; background:none; border:none; }
+  .cart-item-price{ font-family:'IBM Plex Mono',monospace; font-size:0.86rem; font-weight:600; white-space:nowrap; }
+  .subtotal-row{ display:flex; justify-content:space-between; font-size:0.88rem; margin-bottom:6px; color:var(--ink-soft); }
+  .total-row{ display:flex; justify-content:space-between; font-size:1.1rem; font-weight:700; margin-top:10px; padding-top:10px; border-top:1px solid var(--glass-border); }
+  .checkout-btn{ width:100%; background:var(--grad-brand); color:#fff; border:none; border-radius:var(--radius-sm); padding:13px; font-size:0.94rem; font-weight:700; margin-top:14px; }
+  .checkout-btn:hover{ opacity:0.9; }
+  .checkout-btn:disabled{ opacity:0.4; }
+  .modal-center{ position:fixed; inset:0; z-index:80; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity .18s ease; }
+  .modal-center.open{ opacity:1; pointer-events:auto; }
+  .modal-box{ background:var(--bg-2); border:1px solid var(--glass-border); width:100%; max-width:560px; max-height:92vh; overflow-y:auto; border-radius:18px 18px 0 0; transform:translateY(24px); transition:transform .22s ease; padding:0 0 24px; }
+  .modal-center.open .modal-box{ transform:translateY(0); }
+  @media (min-width:640px){ .modal-center{ align-items:center; } .modal-box{ border-radius:14px; transform:translateY(10px) scale(.98); } }
+  .modal-drag{ width:36px; height:4px; background:var(--glass-border); border-radius:2px; margin:10px auto 4px; }
+  .modal-inner{ padding:6px 24px 0; }
+  .modal-close-x{ position:absolute; top:14px; right:16px; background:rgba(255,255,255,0.08); border:1px solid var(--glass-border); width:30px; height:30px; border-radius:50%; font-size:1rem; color:var(--ink-soft); z-index:2; }
+  .pd-swatch{ width:100%; aspect-ratio:16/9; border-radius:18px 18px 0 0; overflow:hidden; position:relative; background:rgba(255,255,255,0.05); }
+  .pd-swatch img{ width:100%; height:100%; object-fit:cover; }
+  .pd-cat{ font-size:0.72rem; color:var(--gold); font-weight:700; margin-top:16px; text-transform:uppercase; letter-spacing:0.03em; }
+  .pd-title{ font-size:1.4rem; margin-top:6px; line-height:1.25; }
+  .pd-seller{ font-size:0.85rem; color:var(--ink-soft); margin-top:6px; }
+  .pd-price{ font-family:'IBM Plex Mono',monospace; font-size:1.5rem; margin-top:14px; font-weight:700; color:var(--ink); }
+  .pd-desc{ font-size:0.92rem; line-height:1.6; color:var(--ink-soft); margin-top:14px; }
+  .pd-specs{ margin-top:16px; border-top:1px solid var(--glass-border); }
+  .pd-spec-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--glass-border); font-size:0.85rem; }
+  .pd-spec-row span:first-child{ color:var(--ink-soft); }
+  .pd-actions{ display:flex; gap:10px; margin-top:20px; }
+  .pd-actions .add-btn{ padding:13px; font-size:0.9rem; }
+  .pd-actions .buy-btn{ background:var(--gold); color:var(--navy); }
+  .pd-actions .buy-btn:hover{ opacity:0.9; }
+  .steps{ display:flex; gap:6px; padding:16px 24px 0; }
+  .step-dot{ flex:1; height:3px; background:var(--glass-border); border-radius:2px; }
+  .step-dot.active{ background:var(--accent-blue); }
+  .field{ margin-top:14px; }
+  .field label{ display:block; font-size:0.78rem; color:var(--ink-soft); margin-bottom:5px; }
+  .field input, .field select, .field textarea{ width:100%; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); border-radius:var(--radius-sm); padding:10px 12px; font-size:0.9rem; color:var(--ink); font-family:inherit; }
+  .field input::placeholder, .field textarea::placeholder{ color:var(--ink-soft); }
+  .field.err input{ border-color:var(--red); }
+  .field .err-msg{ display:none; color:var(--red); font-size:0.75rem; margin-top:4px; }
+  .field.err .err-msg{ display:block; }
+  .field-row{ display:flex; gap:10px; }
+  .field-row .field{ flex:1; }
+  .order-summary{ background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); border-radius:var(--radius-sm); padding:14px; margin-top:16px; }
+  .order-summary .line{ display:flex; justify-content:space-between; font-size:0.85rem; padding:4px 0; }
+  .pay-btn{ width:100%; background:var(--grad-brand); color:#fff; border:none; border-radius:var(--radius-sm); padding:14px; font-size:0.95rem; font-weight:700; margin-top:18px; }
+  .pay-btn:hover{ opacity:0.9; }
+  .pay-btn:disabled{ opacity:0.5; }
+  .secure-note{ font-size:0.72rem; color:var(--ink-soft); text-align:center; margin-top:10px; }
+  .confirm-mark{ width:56px; height:56px; border-radius:50%; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin:20px auto 0; }
+  .confirm-title{ text-align:center; font-size:1.4rem; margin-top:14px; }
+  .confirm-sub{ text-align:center; color:var(--ink-soft); font-size:0.88rem; margin-top:6px; }
+  .confirm-id{ text-align:center; font-family:'IBM Plex Mono',monospace; font-size:0.9rem; margin-top:14px; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); padding:10px; border-radius:var(--radius-sm); font-weight:600; color:var(--ink); }
+  .confirm-list{ margin-top:18px; border-top:1px solid var(--glass-border); }
+  .done-btn{ width:100%; background:var(--gold); color:var(--navy); border:none; border-radius:var(--radius-sm); padding:13px; font-size:0.9rem; font-weight:700; margin-top:20px; }
+  .sell-note{ font-size:0.85rem; color:var(--ink-soft); line-height:1.5; margin-top:6px; }
+  .toast{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--glass-border); color:#fff;
+    padding:11px 18px; border-radius:999px; font-size:0.85rem; z-index:90; opacity:0; pointer-events:none; transition:all .2s ease; font-weight:600;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  @media (max-width:560px){ .section-head{ flex-direction:column; align-items:flex-start; } }
+
+  .whatsapp-fab{
+    position:fixed; bottom:22px; right:22px; z-index:50; background:#25D366; color:#fff; border:none;
+    border-radius:999px; padding:13px 18px; font-size:0.85rem; font-weight:700; display:flex; align-items:center; gap:8px;
+    box-shadow:0 12px 24px rgba(37,211,102,0.4);
+  }
+  .whatsapp-fab:hover{ background:#20bd5a; }
+  @media (max-width:560px){ .whatsapp-fab span.lbl{ display:none; } .whatsapp-fab{ padding:13px; } }
+
+  /* ================= AI SUPPORT WIDGET (isolated — own state, own
+     open/close, never touches the cart/product/checkout overlay system) ================= */
+  .ai-fab{
+    position:fixed; bottom:22px; left:22px; z-index:50; background:var(--grad-brand); color:#fff; border:none;
+    border-radius:999px; padding:13px 18px; font-size:0.85rem; font-weight:700; display:flex; align-items:center; gap:8px;
+    box-shadow:0 12px 24px rgba(56,189,248,0.35); cursor:pointer;
+  }
+  @media (max-width:560px){ .ai-fab span.lbl{ display:none; } .ai-fab{ padding:13px; } }
+  .ai-panel{
+    position:fixed; bottom:90px; left:22px; z-index:95; width:340px; max-width:calc(100vw - 32px); max-height:min(70vh,520px);
+    background:var(--glass-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border); border-radius:var(--radius); box-shadow:0 20px 50px rgba(0,0,0,0.5);
+    display:none; flex-direction:column; overflow:hidden;
+  }
+  .ai-panel.open{ display:flex; }
+  .ai-panel-head{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--glass-border); }
+  .ai-panel-head h4{ font-size:0.92rem; margin:0; display:flex; align-items:center; gap:6px; }
+  .ai-badge{ font-size:0.62rem; font-weight:700; letter-spacing:0.03em; background:var(--grad-brand); color:#fff; padding:2px 7px; border-radius:999px; }
+  .ai-panel-close{ background:rgba(255,255,255,0.08); border:1px solid var(--glass-border); width:26px; height:26px; border-radius:50%; font-size:0.9rem; color:var(--ink-soft); cursor:pointer; }
+  .ai-panel-body{ flex:1; overflow-y:auto; padding:12px 14px; display:flex; flex-direction:column; gap:10px; }
+  .ai-msg{ font-size:0.85rem; line-height:1.4; padding:9px 12px; border-radius:12px; max-width:88%; }
+  .ai-msg.user{ align-self:flex-end; background:var(--grad-brand); color:#fff; }
+  .ai-msg.assistant{ align-self:flex-start; background:rgba(255,255,255,0.06); border:1px solid var(--glass-border); color:var(--ink); }
+  .ai-msg.system-note{ align-self:center; font-size:0.76rem; color:var(--ink-soft); text-align:center; max-width:100%; }
+  .ai-panel-foot{ display:flex; gap:8px; padding:12px; border-top:1px solid var(--glass-border); }
+  .ai-panel-foot input{ flex:1; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); border-radius:var(--radius-sm); padding:9px 11px; color:var(--ink); font-size:0.85rem; }
+  .ai-panel-foot button{ background:var(--grad-brand); color:#fff; border:none; border-radius:var(--radius-sm); padding:0 14px; font-weight:700; font-size:0.85rem; cursor:pointer; }
+  .ai-panel-foot button:disabled{ opacity:0.5; cursor:default; }
+</style>
+</head>
+<body>
+
+<div class="topstrip">
+  <div class="wrap">
+    <div class="left"><span>📞 +1 (415) 555-0148</span><span>✉ hello@ledgermarket.com</span></div>
+    <div class="right"><span>🌐 Buyers worldwide</span><a href="#" onclick="return openSell(event)">Sell your work</a></div>
+  </div>
+</div>
+
+<header>
+  <div class="mainbar">
+    <div class="wrap">
+      <a href="#" class="wordmark" onclick="return resetHome(event)">
+        <span class="badge">M</span>
+        <span class="txt"><span class="mark">MN Group</span><br><span class="tag">DIGITAL MARKET</span></span>
+      </a>
+      <div class="top-actions" style="margin-left:auto;">
+        <button class="icon-btn" aria-label="Search" onclick="toggleSearch()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="Open cart" onclick="openCart()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
+          <span class="cart-count" id="cartCount" style="display:none">0</span>
+        </button>
+        <button class="auth-btn" onclick="openAuth('login')">Login</button>
+        <button class="auth-btn solid" onclick="openAuth('register')">Register</button>
+        <button class="sell-btn" onclick="openSell()">Sell</button>
+      </div>
+    </div>
+    <div class="wrap mainbar-sub">
+      <nav class="subnav">
+        <a href="#" onclick="return resetHome(event)">Home</a>
+        <a href="#" onclick="return openSell(event)">Sellers</a>
+        <a href="#" onclick="return openServiceDetail(event, null)">Services</a>
+        <a href="#about" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'}); return false;">About us</a>
+        <a href="#about" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'}); return false;">Contact</a>
+      </nav>
+      <div class="search-row" id="searchRow"><input type="text" id="searchInput" placeholder="Search products, e.g. 'invoice template' or 'React'" oninput="renderGrid()"></div>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="hero"></section>
+
+<section class="stats-strip">
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat"><div class="num">12k+</div><div class="lbl">Products listed</div></div>
+      <div class="stat"><div class="num">3,200+</div><div class="lbl">Active sellers</div></div>
+      <div class="stat"><div class="num">140+</div><div class="lbl">Countries reached</div></div>
+      <div class="stat"><div class="num">98%</div><div class="lbl">On-time delivery</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="eyebrow-sm">B2B services</div>
+    <div class="section-head" style="margin-top:6px;">
+      <h2>Work with our team</h2>
+      <span class="result-count">Request a custom quote — no obligation</span>
+    </div>
+    <div class="cat-grid" id="serviceGrid"></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="wrap">
+    <div class="eyebrow-sm">Explore the marketplace</div>
+    <div class="section-head" style="margin-top:6px;">
+      <h2>Shop by category</h2>
+      <a href="#" class="view-all" onclick="return filterCat(event,'all')">View all categories →</a>
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Trending this week</h2>
+      <span class="result-count">Ranked by sales &amp; rating</span>
+    </div>
+    <div class="trend-scroll" id="trendScroll"></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:6px;">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="listingTitle">Featured products</h2>
+      <select class="sort-select" id="sortSelect" onchange="renderGrid()">
+        <option value="popular">Sort: Most popular</option>
+        <option value="price-asc">Sort: Price low–high</option>
+        <option value="price-desc">Sort: Price high–low</option>
+        <option value="new">Sort: Newest</option>
+      </select>
+    </div>
+    <div class="toolbar"><span class="result-count" id="resultCount"></span></div>
+    <div class="grid" id="grid"></div>
+
+    <div class="cta-panel" style="margin-top:26px;">
+      <div class="txt"><h3>Can't find what you need?</h3><p>Tell us what you're looking for and we'll point you to the right seller.</p></div>
+      <button onclick="openServiceDetail(event, null)">Request custom work</button>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:6px;">
+  <div class="wrap">
+    <div class="eyebrow-sm">Buyers say</div>
+    <div class="section-head" style="margin-top:6px;"><h2>Loved by people who ship</h2></div>
+    <div class="testi-grid" id="testiGrid"></div>
+  </div>
+</section>
+
+<section class="section" id="about" style="padding-top:6px;">
+  <div class="wrap">
+    <div class="eyebrow-sm">About MN Group</div>
+    <div class="section-head" style="margin-top:6px;">
+      <h2>Built on trust, clarity, and useful technology.</h2>
+    </div>
+    <p class="sell-note" style="max-width:62ch; font-size:0.95rem; margin-top:-8px;">MN Group is a marketplace for practical digital products, software tools, and technology services. Our goal is simple: make useful digital solutions easier to discover, understand, and use.</p>
+    <div class="about-grid">
+      <div class="about-card">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 17l-4-4 1.4-1.4L11 14.2l6.6-6.6L19 9l-8 8z"/><path d="M4 12a8 8 0 1 1 3 6.3"/></svg></span>
+        <h3>Trust through transparency</h3>
+        <p>We aim to communicate clearly about products, pricing, availability, project scope, and service expectations — and avoid promising more than the platform can currently deliver.</p>
+      </div>
+      <div class="about-card">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg></span>
+        <h3>Security &amp; responsibility</h3>
+        <p>Security is part of the roadmap from day one. Account information and authentication are handled with modern safeguards, with payments moving to trusted third-party infrastructure as the platform matures.</p>
+      </div>
+      <div class="about-card">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></span>
+        <h3>Quality before growth</h3>
+        <p>We're building step by step, testing features before expanding them — aiming for a dependable experience across mobile, tablet, and desktop rather than rushing unfinished features out.</p>
+      </div>
+      <div class="about-card">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 19c0-3.3 3-6 6.5-6s6.5 2.7 6.5 6"/><circle cx="18" cy="8.5" r="2.4"/><path d="M15.8 13.2c2.8.3 5.2 2.7 5.2 5.8"/></svg></span>
+        <h3>People first</h3>
+        <p>Whether you're buying a digital product or discussing a custom project, we value clear communication, fair expectations, and practical support throughout.</p>
+      </div>
+    </div>
+    <div class="about-notice"><strong>MN Group launch note:</strong> Product availability, payment status and delivery are shown from the platform systems. New seller listings require admin review before publication.</div>
+  </div>
+</section>
+
+<section class="newsletter">
+  <div class="wrap nl-row">
+    <div><h3 class="display">Get the weekly drop</h3><p>New listings and seller spotlights, once a week — no spam.</p></div>
+    <form class="nl-form" onsubmit="return subscribeNewsletter(event)">
+      <input type="email" id="nlEmail" placeholder="you@email.com" required>
+      <button type="submit">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+<section class="trust-strip">
+  <div class="wrap">
+    <div class="trust-grid">
+      <div class="trust-item"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg></span><div><div class="t1">Reviewed listings</div><div class="t2">Reviewed before listing</div></div></div>
+      <div class="trust-item"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></span><div><div class="t1">Quality assurance</div><div class="t2">Every file checked</div></div></div>
+      <div class="trust-item"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="10" width="18" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg></span><div><div class="t1">Secure payments</div><div class="t2">Encrypted transactions</div></div></div>
+      <div class="trust-item"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></span><div><div class="t1">Instant delivery</div><div class="t2">No shipping wait</div></div></div>
+      <div class="trust-item"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg></span><div><div class="t1">24/7 support</div><div class="t2">Always here to help</div></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div><span class="mark display" style="font-size:1.15rem; color:#fff;">MN Group</span><p class="sell-note" style="max-width:32ch; color:#9DAFCB;">A practical marketplace for digital products, physical products and business services.</p></div>
+      <div><h4>MARKETPLACE</h4><ul><li><a href="#" onclick="return filterCat(event,'all')">All categories</a></li><li><a href="#" onclick="return openSell(event)">Sell your work</a></li><li><a href="#" onclick="return openCart(event)">Your cart</a></li></ul></div>
+      <div><h4>SUPPORT</h4><ul><li><a href="#about" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'}); return false;">Help & support</a></li><li><a href="#about" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'}); return false;">Policies</a></li><li><a href="#about" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'}); return false;">Contact</a></li></ul></div>
+    </div>
+    <div class="bottom"><span>© 2026 MN Group. Digital products, physical products and business services.</span><span>Prices shown in INR (₹)</span></div>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim" onclick="closeAllOverlays()"></div>
+<div class="drawer" id="cartDrawer" aria-hidden="true">
+  <div class="drawer-head"><h2>Your cart</h2><button class="drawer-close" onclick="closeAllOverlays()" aria-label="Close cart">✕</button></div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="drawer-foot" id="cartFoot" style="display:none">
+    <div class="subtotal-row"><span>Subtotal</span><span id="cartSubtotal" class="mono"></span></div>
+    <div class="total-row"><span>Total</span><span id="cartTotal" class="mono"></span></div>
+    <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()">Checkout</button>
+  </div>
+</div>
+
+<div class="modal-center" id="authModal" onclick="closeOnBackdrop(event)"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="modal-inner" id="authContent"></div></div></div>
+<div class="modal-center" id="pdModal" onclick="closeOnBackdrop(event)"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div id="pdContent"></div></div></div>
+<div class="modal-center" id="checkoutModal" onclick="closeOnBackdrop(event)"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="steps"><div class="step-dot active" id="stepDot1"></div><div class="step-dot" id="stepDot2"></div></div><div class="modal-inner" id="checkoutContent"></div></div></div>
+<div class="modal-center" id="sellModal" onclick="closeOnBackdrop(event)"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="modal-inner" id="sellContent"></div></div></div>
+<div class="modal-center" id="ordersModal" onclick="closeOnBackdrop(event)"><div class="modal-box" style="position:relative;"><button class="modal-close-x" onclick="closeAllOverlays()" aria-label="Close">✕</button><div class="modal-drag"></div><div class="modal-inner" id="ordersContent"></div></div></div>
+
+<div class="toast" id="toast"></div>
+
+<button class="whatsapp-fab" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})" aria-label="Open support information">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.79.47 3.47 1.29 4.93L2 22l5.29-1.39c1.41.77 3.02 1.21 4.75 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.5 14.13c-.23.65-1.36 1.24-1.87 1.29-.5.05-1.01.24-3.39-.7-2.87-1.14-4.72-4.04-4.86-4.23-.14-.19-1.16-1.54-1.16-2.94s.72-2.09.97-2.37c.25-.28.55-.35.73-.35h.53c.17 0 .4-.03.61.47.23.55.77 1.9.84 2.04.07.14.11.3.02.48-.09.19-.14.3-.28.46-.14.16-.29.36-.42.48-.14.13-.28.28-.12.55.16.28.7 1.16 1.51 1.88 1.04.93 1.92 1.22 2.19 1.36.28.14.44.12.6-.07.16-.19.68-.79.87-1.06.18-.28.37-.23.62-.14.25.09 1.6.75 1.87.89.28.14.46.21.53.32.07.12.07.68-.16 1.33z"/></svg>
+  <span class="lbl">Chat on WhatsApp</span>
+</button>
+
+<!-- AI support widget: isolated feature. Its open/close state and DOM are
+     entirely separate from the cart/product/checkout overlay system above
+     (state.overlay, closeAllOverlays(), showOverlay()) by design, so it can
+     never interfere with — or be interfered with by — those modals. -->
+<button class="ai-fab" id="aiFabBtn" onclick="toggleAiPanel()" aria-label="Ask MN Group AI">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M9 13v2M15 13v2"/></svg>
+  <span class="lbl">Ask MN Group AI</span>
+</button>
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-panel-head">
+    <h4>Ask MN Group AI <span class="ai-badge">AI</span></h4>
+    <button class="ai-panel-close" onclick="toggleAiPanel()" aria-label="Close">✕</button>
+  </div>
+  <div class="ai-panel-body" id="aiPanelBody"></div>
+  <div class="ai-panel-foot">
+    <input type="text" id="aiInput" placeholder="Ask about products, pricing, services…" onkeydown="if(event.key==='Enter') sendAiMessage();">
+    <button id="aiSendBtn" onclick="sendAiMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+/* ================= DATA ================= */
+const CATEGORIES = [
+  {id:'all', label:'All'}, {id:'software', label:'Software'}, {id:'templates', label:'Templates'},
+  {id:'courses', label:'Courses'}, {id:'design', label:'Design assets'}, {id:'services', label:'Services'}, {id:'plugins', label:'Plugins'},
+];
+const CAT_COLOR = { software:'#4C6FFF', templates:'#FF7A45', courses:'#16A672', design:'#B24BF3', services:'#F5426C', plugins:'#17A8C4' };
+const CAT_SEED = { software:'circuit-blue', templates:'paper-grid', courses:'study-desk', design:'paint-studio', services:'handshake-office', plugins:'tech-parts' };
+const ICONS = {
+  software:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 9l-4 3 4 3"/><path d="M16 9l4 3-4 3"/><path d="M13 5l-2 14"/></svg>',
+  templates:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
+  courses:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>',
+  design:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/></svg>',
+  services:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12a8 8 0 0 1 16 0"/><path d="M4 12v4a2 2 0 0 0 2 2h1v-6H5a1 1 0 0 0-1 1z"/><path d="M20 12v4a2 2 0 0 1-2 2h-1v-6h2a1 1 0 0 1 1 1z"/></svg>',
+  plugins:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3v3H6v3H3v4h3l1 1v3h3v3h4v-3h3v-3l1-1h3v-4h-3V6h-3V3H9z"/></svg>',
+};
+function catImg(seed, w, h){ return `https://picsum.photos/seed/${seed}/${w}/${h}`; }
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+let PRODUCTS = [];
+let productsLoaded = false;
+let productsLoadError = false;
+function normalizeProduct(p){
+  return {
+    id: p.id, name: p.name, price: p.price,
+    cat: p.category || 'other',
+    seller: p.sellerName || 'MN Group',
+    desc: p.description || '',
+    fileName: p.fileName || null, payhipUrl: p.payhipUrl || null,
+    rating: 0, reviews: 0, specs: {},
+    createdAt: p.createdAt || null,
+  };
+}
+async function loadProducts(){
+  try {
+    const list = await mnApi('/api/products');
+    PRODUCTS = list.map(normalizeProduct);
+    productsLoadError = false;
+  } catch (err) {
+    PRODUCTS = [];
+    productsLoadError = true;
+    showToast('Could not load products — check your connection and try again');
+  }
+  productsLoaded = true;
+}
+function isNewProduct(p){ return p.createdAt && (Date.now() - new Date(p.createdAt).getTime()) < 1000*60*60*24*30; }
+function bestsellerIds(){ return PRODUCTS.slice().sort((a,b)=>(b.reviews*b.rating)-(a.reviews*a.rating)).slice(0,3).map(p=>p.id); }
+function catLabel(catId){ return (CATEGORIES.find(c=>c.id===catId) || {label:'Other'}).label; }
+
+const TESTIMONIALS = [
+  {name:'Alicia Moreno', role:'Product designer', quote:'Found a Figma icon set that matched our brand exactly, and it was ready to use within the hour.', seed:'alicia-m', stars:5},
+  {name:'Devon Clarke', role:'Indie developer', quote:'Bought a plugin here that would have taken me a weekend to build myself. Straightforward checkout too.', seed:'devon-c', stars:5},
+  {name:'Priya Nair', role:'Marketing lead', quote:'The pitch deck template saved our team days before a fundraising round. Clean, professional, easy to edit.', seed:'priya-n', stars:4},
+];
+
+let state = { cat:'all', search:'', cart:{}, overlay:null, activeProduct:null, checkoutStep:1, buyer:{} };
+
+/* ================= HERO CAROUSEL ================= */
+const HERO_SLIDES = [
+  {seed:'workspace-desk', eyebrow:'A market for finished digital work', title:'Great work, priced <span class="accent">plainly.</span>', sub:'Software licenses, templates, courses, design assets and freelance services — clear checkout and digital delivery.'},
+  {seed:'designer-studio', eyebrow:'For buyers in a hurry', title:'Skip the brief. <span class="accent">Buy the result.</span>', sub:'Practical digital products and services, with clear checkout and delivery flows.'},
+  {seed:'coder-night', eyebrow:'For sellers of digital work', title:'Turn your work into <span class="accent">income.</span>', sub:'List a product once and keep selling it — no shipping, no inventory, no middle layer of ads.'},
+];
+let heroIndex = 0, heroTimer = null;
+function renderHero(){
+  const hero = document.getElementById('hero');
+  hero.innerHTML = HERO_SLIDES.map((s,i)=>`
+    <div class="hero-slide ${i===0?'active':''}" style="background-image:url('${catImg(s.seed,1600,900)}')" data-i="${i}"></div>
+  `).join('') + `
+    <div class="hero-content wrap">
+      <div class="eyebrow"><span class="dot"></span><span id="heroEyebrow">${HERO_SLIDES[0].eyebrow}</span></div>
+      <h1 id="heroTitle">${HERO_SLIDES[0].title}</h1>
+      <p id="heroSub">${HERO_SLIDES[0].sub}</p>
+      <form class="search-panel" onsubmit="return heroSearch(event)">
+        <select id="heroCatSelect"><option value="all">All categories</option></select>
+        <input type="text" id="heroSearchInput" placeholder="Try “Notion template” or “logo design”">
+        <button type="submit">Search</button>
+      </form>
+      <div class="badges-row">
+        <div class="badge-item"><div class="badge-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg></div><div><div class="t1">Reviewed listings</div><div class="t2">Listings are reviewed before approval</div></div></div>
+        <div class="badge-item"><div class="badge-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></div><div><div class="t1">Instant delivery</div><div class="t2">Digital delivery after payment</div></div></div>
+        <div class="badge-item"><div class="badge-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="10" width="18" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg></div><div><div class="t1">Secure checkout</div><div class="t2">Encrypted payments</div></div></div>
+        <div class="badge-item"><div class="badge-icon"><span class="mono" style="font-size:0.85rem;">$</span></div><div><div class="t1">Clear pricing</div><div class="t2">Shown before checkout</div></div></div>
+      </div>
+    </div>
+    <div class="float-card">
+      <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+      <h4 class="display">Need something custom?</h4>
+      <p>Describe the work and we'll match you with a seller.</p>
+      <button onclick="openServiceDetail(null, null)">Request custom work</button>
+    </div>
+    <div class="hero-dots">${HERO_SLIDES.map((_,i)=>`<button class="hero-dot ${i===0?'active':''}" data-i="${i}" aria-label="Slide ${i+1}"></button>`).join('')}</div>
+  `;
+  hero.querySelectorAll('.hero-dot').forEach(d=> d.onclick = ()=> goHero(parseInt(d.dataset.i)) );
+  const heroSel = document.getElementById('heroCatSelect');
+  CATEGORIES.filter(c=>c.id!=='all').forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.label; heroSel.appendChild(o); });
+  restartHeroTimer();
+}
+function goHero(i){
+  heroIndex = i;
+  document.querySelectorAll('.hero-slide').forEach(el=> el.classList.toggle('active', parseInt(el.dataset.i)===i));
+  document.querySelectorAll('.hero-dot').forEach(el=> el.classList.toggle('active', parseInt(el.dataset.i)===i));
+  document.getElementById('heroEyebrow').textContent = HERO_SLIDES[i].eyebrow;
+  document.getElementById('heroTitle').innerHTML = HERO_SLIDES[i].title;
+  document.getElementById('heroSub').textContent = HERO_SLIDES[i].sub;
+  restartHeroTimer();
+}
+function restartHeroTimer(){ clearInterval(heroTimer); heroTimer = setInterval(()=> goHero((heroIndex+1)%HERO_SLIDES.length), 6000); }
+renderHero();
+
+/* ================= NAV / CATEGORY ================= */
+function filterCat(e, id){
+  if(e) e.preventDefault();
+  closeAllOverlays();
+  state.cat = id; state.search='';
+  document.getElementById('searchInput').value='';
+  const hsi = document.getElementById('heroSearchInput'); if(hsi) hsi.value='';
+  document.getElementById('listingTitle').textContent = id==='all' ? 'Featured products' : CATEGORIES.find(c=>c.id===id).label;
+  renderGrid();
+  document.getElementById('listingTitle').closest('section').scrollIntoView({behavior:'smooth', block:'start'});
+  return false;
+}
+function resetHome(e){ e.preventDefault(); filterCat(null,'all'); window.scrollTo({top:0, behavior:'smooth'}); return false; }
+function toggleSearch(){ document.getElementById('searchRow').classList.toggle('open'); document.getElementById('searchInput').focus(); }
+function heroSearch(e){
+  e.preventDefault();
+  const v = document.getElementById('heroSearchInput').value;
+  const c = document.getElementById('heroCatSelect').value;
+  state.search = v; state.cat = c;
+  document.getElementById('searchInput').value = v;
+  document.getElementById('listingTitle').textContent = v ? `Results for “${v}”` : (c==='all'?'Featured products':CATEGORIES.find(x=>x.id===c).label);
+  renderGrid();
+  document.getElementById('listingTitle').closest('section').scrollIntoView({behavior:'smooth'});
+  return false;
+}
+
+// Service catalog placeholder set. The quote workflow is production-safe,
+// but the six official MN Group service names still need to be supplied
+// by the business owner before public launch; the ids must match server.js.
+// (Declared here, ahead of renderCatGrid()/renderServiceGrid() below, because
+// those are invoked immediately at parse time and previously threw a
+// ReferenceError trying to read this const before its declaration ran.)
+const SERVICE_LINES = [
+  { id:'web-development', label:'Web Development', blurb:'Custom websites and web applications built to your spec.' },
+  { id:'mobile-development', label:'Mobile Development', blurb:'Native and cross-platform mobile apps for iOS and Android.' },
+  { id:'design-branding', label:'Design & Branding', blurb:'Brand identity, UI/UX design, and visual design systems.' },
+  { id:'digital-marketing', label:'Digital Marketing', blurb:'SEO, paid campaigns, and growth strategy.' },
+  { id:'consulting-strategy', label:'Consulting & Strategy', blurb:'Technical advisory and product strategy engagements.' },
+  { id:'managed-support', label:'Managed Support', blurb:'Ongoing maintenance, support, and monitoring.' },
+];
+
+/* ================= CATEGORY TILES ================= */
+function renderCatGrid(){
+  const g = document.getElementById('catGrid'); g.innerHTML = '';
+  CATEGORIES.filter(c=>c.id!=='all').forEach(c=>{
+    const count = PRODUCTS.filter(p=>p.cat===c.id).length;
+    const el = document.createElement('div'); el.className='cat-tile';
+    el.innerHTML = `
+      <div class="imgwrap">
+        <div class="cbadge" style="background:${CAT_COLOR[c.id]};">${ICONS[c.id]}</div>
+        <img src="${catImg(CAT_SEED[c.id],300,300)}" alt="" loading="lazy" onerror="this.style.display='none'">
+      </div>
+      <div class="name">${c.label}</div>
+      <div class="count">${count} products</div>
+    `;
+    el.onclick = ()=>filterCat(null, c.id);
+    g.appendChild(el);
+  });
+}
+renderCatGrid();
+renderServiceGrid();
+
+/* ================= TRENDING ================= */
+function renderTrending(){
+  const t = document.getElementById('trendScroll'); t.innerHTML='';
+  const list = PRODUCTS.slice().sort((a,b)=>(b.reviews*b.rating)-(a.reviews*a.rating)).slice(0,8);
+  list.forEach((p,i)=>{
+    const el = document.createElement('div'); el.className='trend-card';
+    el.innerHTML = `
+      <div class="trend-thumb">
+        <span class="trend-rank">${i+1}</span>
+        <img src="${catImg('p-'+p.id,300,225)}" alt="" loading="lazy" onerror="this.style.display='none'">
+      </div>
+      <div class="trend-body">
+        <h4>${p.name}</h4>
+        <div class="price mono">$${p.price}</div>
+      </div>
+    `;
+    el.onclick = ()=>openProduct(p.id);
+    t.appendChild(el);
+  });
+}
+renderTrending();
+
+/* ================= TESTIMONIALS ================= */
+function renderTestimonials(){
+  const g = document.getElementById('testiGrid'); g.innerHTML='';
+  TESTIMONIALS.forEach(t=>{
+    const el = document.createElement('div'); el.className='testi-card';
+    el.innerHTML = `
+      <div class="testi-stars">${'★'.repeat(t.stars)}${'☆'.repeat(5-t.stars)}</div>
+      <div class="testi-quote">“${t.quote}”</div>
+      <div class="testi-who">
+        <img src="${catImg(t.seed,80,80)}" alt="" onerror="this.style.display='none'">
+        <div><div class="n1">${t.name}</div><div class="n2">${t.role}</div></div>
+      </div>
+    `;
+    g.appendChild(el);
+  });
+}
+renderTestimonials();
+
+/* ================= GRID ================= */
+function currentList(){
+  let list = PRODUCTS.slice();
+  if(state.cat !== 'all') list = list.filter(p=>p.cat===state.cat);
+  const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+  if(q){ list = list.filter(p=> (p.name+p.desc+p.seller).toLowerCase().includes(q)); }
+  const sort = document.getElementById('sortSelect').value;
+  if(sort==='price-asc') list.sort((a,b)=>a.price-b.price);
+  else if(sort==='price-desc') list.sort((a,b)=>b.price-a.price);
+  else if(sort==='new') list.sort((a,b)=> new Date(b.createdAt||0) - new Date(a.createdAt||0));
+  else list.sort((a,b)=> (b.reviews*b.rating) - (a.reviews*a.rating));
+  return list;
+}
+function starRow(rating){
+  const full = Math.round(rating);
+  return '<span class="stars">' + '★'.repeat(full) + '☆'.repeat(5-full) + '</span>';
+}
+function renderGrid(){
+  const grid = document.getElementById('grid');
+  const list = currentList();
+  document.getElementById('resultCount').textContent = `${list.length} item${list.length===1?'':'s'}`;
+  grid.innerHTML = '';
+  if(list.length===0){
+    grid.innerHTML = !productsLoaded
+      ? `<div class="empty-state"><h3 class="display" style="font-size:1.1rem;">Loading products…</h3><p>Just a moment.</p></div>`
+      : productsLoadError
+        ? `<div class="empty-state"><h3 class="display" style="font-size:1.1rem;">Couldn't load products</h3><p>Check your connection and refresh the page.</p></div>`
+        : `<div class="empty-state"><h3 class="display" style="font-size:1.1rem;">No matches</h3><p>Try a different search term or browse another category.</p></div>`;
+    return;
+  }
+  const best = bestsellerIds();
+  list.forEach(p=>{
+    const card = document.createElement('div'); card.className='card';
+    card.onclick = ()=>openProduct(p.id);
+    const inCart = !!state.cart[p.id];
+    let ribbon = '';
+    if(isNewProduct(p)) ribbon = `<span class="ribbon" style="background:var(--green);">New</span>`;
+    else if(best.includes(p.id)) ribbon = `<span class="ribbon" style="background:var(--gold-deep);">Bestseller</span>`;
+    card.innerHTML = `
+      <div class="thumb">
+        <img src="${catImg('p-'+p.id,400,300)}" alt="" loading="lazy" onerror="this.style.display='none'">
+        <span class="cat-chip" style="background:${CAT_COLOR[p.cat]||'#6B7280'};">${catLabel(p.cat)}</span>
+        ${ribbon}
+      </div>
+      <div class="body">
+        <h3>${p.name}</h3>
+        <div class="seller">by ${p.seller}</div>
+        <div class="meta-row">
+          <span class="price mono">$${p.price}</span>
+          <span class="rating">${starRow(p.rating)} ${p.rating}</span>
+        </div>
+        <div class="add-row">
+          <button class="add-btn ${inCart?'added':''}" data-id="${p.id}">${inCart? 'Added ✓' : 'Add to cart'}</button>
+        </div>
+      </div>
+    `;
+    card.querySelector('.add-btn').onclick = (e)=>{ e.stopPropagation(); addToCart(p.id); };
+    grid.appendChild(card);
+  });
+}
+renderGrid();
+
+/* ================= OVERLAYS ================= */
+function closeAllOverlays(){
+  document.getElementById('scrim').classList.remove('open');
+  document.getElementById('cartDrawer').classList.remove('open');
+  document.getElementById('pdModal').classList.remove('open');
+  document.getElementById('checkoutModal').classList.remove('open');
+  document.getElementById('sellModal').classList.remove('open');
+  document.getElementById('authModal').classList.remove('open');
+  document.getElementById('ordersModal').classList.remove('open');
+  document.body.style.overflow=''; state.overlay=null; state.activeProduct=null;
+}
+function showOverlay(which){
+  closeAllOverlays();
+  document.getElementById('scrim').classList.add('open');
+  document.getElementById(which).classList.add('open');
+  document.body.style.overflow='hidden'; state.overlay=which;
+}
+/* Full-screen centered modals (product/checkout/auth/sell/orders) sit above the
+   scrim and, unlike the cart drawer, had no way to dismiss by tapping the dimmed
+   backdrop — only the small close (X) button worked. This restores the same
+   click-outside-to-close behavior the cart drawer already has. */
+function closeOnBackdrop(e){ if(e.target===e.currentTarget) closeAllOverlays(); }
+
+/* ================= CART ================= */
+function addToCart(id){ state.cart[id] = (state.cart[id]||0)+1; renderGrid(); renderCart(); showToast('Added to cart'); }
+function setQty(id, delta){ if(!state.cart[id]) return; state.cart[id]+=delta; if(state.cart[id]<=0) delete state.cart[id]; renderCart(); renderGrid(); }
+function removeFromCart(id){ delete state.cart[id]; renderCart(); renderGrid(); }
+function cartItems(){ return Object.entries(state.cart).map(([id,qty])=>({p:PRODUCTS.find(p=>p.id===id), qty})); }
+function cartTotal(){ return cartItems().reduce((s,i)=>s+i.p.price*i.qty,0); }
+function updateCartCount(){
+  const n = Object.values(state.cart).reduce((a,b)=>a+b,0);
+  const el = document.getElementById('cartCount');
+  if(n>0){ el.style.display='flex'; el.textContent=n; } else { el.style.display='none'; }
+}
+function renderCart(){
+  updateCartCount();
+  const body = document.getElementById('cartBody');
+  const items = cartItems();
+  if(items.length===0){
+    body.innerHTML = `<div class="empty-state" style="border:none; padding:50px 10px;"><h3 class="display" style="font-size:1.1rem;">Your cart is empty</h3><p>Add a product to see it here.</p></div>`;
+    document.getElementById('cartFoot').style.display='none';
+    return;
+  }
+  document.getElementById('cartFoot').style.display='block';
+  body.innerHTML='';
+  items.forEach(({p,qty})=>{
+    const row = document.createElement('div'); row.className='cart-item';
+    row.innerHTML = `
+      <div class="cart-thumb"><img src="${catImg('p-'+p.id,120,120)}" alt="" onerror="this.style.display='none'"></div>
+      <div class="cart-item-info">
+        <h4>${p.name}</h4>
+        <div class="seller-sm">${p.seller}</div>
+        <div class="qty-row">
+          <button class="qty-btn" aria-label="Decrease quantity">−</button>
+          <span class="qty-val">${qty}</span>
+          <button class="qty-btn" aria-label="Increase quantity">+</button>
+          <button class="remove-link">Remove</button>
+        </div>
+      </div>
+      <div class="cart-item-price mono">₹${(p.price*qty).toFixed(2)}</div>
+    `;
+    const [minus, plus] = row.querySelectorAll('.qty-btn');
+    minus.onclick = ()=>setQty(p.id,-1); plus.onclick = ()=>setQty(p.id,1);
+    row.querySelector('.remove-link').onclick = ()=>removeFromCart(p.id);
+    body.appendChild(row);
+  });
+  const total = cartTotal();
+  document.getElementById('cartSubtotal').textContent = `₹${total.toFixed(2)}`;
+  document.getElementById('cartTotal').textContent = `₹${total.toFixed(2)}`;
+}
+function openCart(e){ if(e) e.preventDefault(); renderCart(); showOverlay('cartDrawer'); return false; }
+
+/* ================= PRODUCT DETAIL ================= */
+function openProduct(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  state.activeProduct = id;
+  const inCart = !!state.cart[id];
+  document.getElementById('pdContent').innerHTML = `
+    <div class="pd-swatch"><img src="${catImg('p-'+p.id,900,506)}" alt="" onerror="this.style.display='none'"></div>
+    <div class="modal-inner">
+      <div class="pd-cat">${catLabel(p.cat)} · sold by ${p.seller}</div>
+      <h2 class="pd-title display">${p.name}</h2>
+      <div class="pd-seller">${starRow(p.rating)} ${p.rating} rating from ${p.reviews} buyers</div>
+      <div class="pd-price mono">₹${Number(p.price).toFixed(2)}</div>
+      <div class="pd-desc">${p.desc}</div>
+      <div class="pd-specs">${Object.entries(p.specs).map(([k,v])=>`<div class="pd-spec-row"><span>${k}</span><span>${v}</span></div>`).join('')}</div>
+      <div class="pd-actions">
+        <button class="add-btn ${inCart?'added':''}" id="pdAddBtn" style="padding:13px;">${inCart?'Added ✓':'Add to cart'}</button>
+        <button class="add-btn buy-btn" style="padding:13px;" id="pdBuyBtn">${p.payhipUrl?'Buy securely':'Buy now'}</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('pdAddBtn').onclick = ()=>{ addToCart(id); openProduct(id); };
+  document.getElementById('pdBuyBtn').onclick = ()=>{ if(p.payhipUrl){ window.location.href=p.payhipUrl; return; } if(!state.cart[id]) addToCart(id); openCheckout(); };
+  showOverlay('pdModal');
+}
+
+/* ================= CHECKOUT ================= */
+function openCheckout(){
+  if(cartItems().length===0){ showToast('Your cart is empty'); return; }
+  if(!MN_AUTH.user){ showToast('Please log in to check out'); openAuth('login'); return; }
+  state.checkoutStep = 1; renderCheckout(); showOverlay('checkoutModal');
+}
+function renderCheckout(){
+  document.getElementById('stepDot1').classList.toggle('active', state.checkoutStep>=1);
+  document.getElementById('stepDot2').classList.toggle('active', state.checkoutStep>=2);
+  const el = document.getElementById('checkoutContent');
+  const total = cartTotal();
+  if(state.checkoutStep===1){
+    el.innerHTML = `
+      <h2 class="display" style="font-size:1.25rem; margin-top:10px;">Contact & billing</h2>
+      <div class="field" id="f-name"><label>Full name</label><input type="text" id="in-name" value="${state.buyer.name||''}"><div class="err-msg">Enter your name</div></div>
+      <div class="field" id="f-email"><label>Email — for delivery</label><input type="email" id="in-email" value="${state.buyer.email||''}"><div class="err-msg">Enter a valid email</div></div>
+      <div class="field" id="f-country"><label>Country</label>
+        <select id="in-country">
+          <option ${(!state.buyer.country||state.buyer.country==='United States')?'selected':''}>United States</option>
+          <option ${state.buyer.country==='Canada'?'selected':''}>Canada</option>
+          <option ${state.buyer.country==='United Kingdom'?'selected':''}>United Kingdom</option>
+          <option ${state.buyer.country==='Australia'?'selected':''}>Australia</option>
+          <option ${state.buyer.country==='Other'?'selected':''}>Other</option>
+        </select>
+      </div>
+      <div class="order-summary">
+        ${cartItems().map(i=>`<div class="line"><span>${i.p.name} × ${i.qty}</span><span class="mono">$${(i.p.price*i.qty).toFixed(2)}</span></div>`).join('')}
+        <div class="line" style="font-weight:700; border-top:1px solid var(--line); margin-top:6px; padding-top:8px;"><span>Total due</span><span class="mono">$${total.toFixed(2)}</span></div>
+      </div>
+      <button class="pay-btn" id="toStep2">Continue to payment</button>
+    `;
+    document.getElementById('toStep2').onclick = ()=>{
+      const name = document.getElementById('in-name').value.trim();
+      const email = document.getElementById('in-email').value.trim();
+      const country = document.getElementById('in-country').value;
+      let ok = true;
+      document.getElementById('f-name').classList.toggle('err', !name); if(!name) ok=false;
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      document.getElementById('f-email').classList.toggle('err', !emailOk); if(!emailOk) ok=false;
+      if(!ok) return;
+      state.buyer = {name, email, country}; state.checkoutStep = 2; renderCheckout();
+    };
+  } else if(state.checkoutStep===2){
+    el.innerHTML = `
+      <h2 class="display" style="font-size:1.25rem; margin-top:10px;">Payment</h2>
+      <div class="order-summary">
+        <div class="line"><span>Billed to</span><span>${state.buyer.name}</span></div>
+        <div class="line"><span>Delivery email</span><span>${state.buyer.email}</span></div>
+        <div class="line" style="font-weight:700; border-top:1px solid var(--line); margin-top:6px; padding-top:8px;"><span>Total due</span><span class="mono">$${total.toFixed(2)}</span></div>
+      </div>
+      <div class="secure-note">You'll be redirected to the configured secure payment provider. MN Group does not collect or store your card number, expiry date, or CVC.</div>
+      <button class="pay-btn" id="backStep1" style="background:#fff; color:var(--ink); border:1px solid var(--line); margin-top:10px;">Back</button>
+      <button class="pay-btn" id="payNow" style="background:var(--gold); color:var(--navy);">Continue to secure payment</button>
+    `;
+    document.getElementById('backStep1').onclick = ()=>{ state.checkoutStep=1; renderCheckout(); };
+    document.getElementById('payNow').onclick = ()=> completeOrder(total);
+  } else if(state.checkoutStep===3){
+    const order = state.lastOrder;
+    el.innerHTML = `
+      <div class="confirm-mark">✓</div>
+      <h2 class="confirm-title display">Order placed — payment pending</h2>
+      <p class="confirm-sub">We'll follow up at ${state.buyer.email} once payment is confirmed. No charge has been made yet.</p>
+      <div class="confirm-id">Order ${order.id}</div>
+      <div class="confirm-list">
+        ${order.items.map(i=>`<div class="pd-spec-row"><span>${i.name} × ${i.qty}</span><span class="mono">₹${(i.price*i.qty).toFixed(2)}</span></div>`).join('')}
+        <div class="pd-spec-row" style="font-weight:700;"><span>Amount due (pending)</span><span class="mono">$${order.total.toFixed(2)}</span></div>
+      </div>
+      <button class="done-btn" id="doneBtn">Back to marketplace</button>
+    `;
+    document.getElementById('doneBtn').onclick = ()=>{ closeAllOverlays(); resetHome({preventDefault(){}}); };
+  }
+}
+async function completeOrder(total){
+  const payBtn = document.getElementById('payNow');
+  if(payBtn){ payBtn.disabled = true; payBtn.textContent = 'Preparing secure payment…'; }
+  try {
+    const items = cartItems().map(({p,qty})=>({id:p.id, qty}));
+    const order = await mnApi('/api/orders', {method:'POST', body:JSON.stringify({items})});
+    const session = await mnApi('/api/orders/'+encodeURIComponent(order.id)+'/pay', {method:'POST', body:JSON.stringify({})});
+    state.lastOrder = order;
+    state.cart = {}; renderCart(); renderGrid();
+    const form = document.createElement('form');
+    form.method = 'POST'; form.action = session.actionUrl; form.style.display = 'none';
+    Object.entries(session.fields || {}).forEach(([key,value])=>{
+      const input = document.createElement('input'); input.type='hidden'; input.name=key; input.value=value == null ? '' : String(value); form.appendChild(input);
+    });
+    document.body.appendChild(form);
+    form.submit();
+  } catch (err) {
+    showToast(err.message || 'Could not start payment — please try again');
+    if(payBtn){ payBtn.disabled = false; payBtn.textContent = 'Continue to secure payment'; }
+  }
+}
+
+/* ================= MY ORDERS ================= */
+async function openMyOrders(){
+  document.getElementById('ordersContent').innerHTML = `<h2 class="display" style="font-size:1.25rem; margin-top:10px;">Your orders</h2><p class="sell-note">Loading…</p>`;
+  showOverlay('ordersModal');
+  try {
+    const orders = await mnApi('/api/orders');
+    const el = document.getElementById('ordersContent');
+    if(!orders.length){
+      el.innerHTML = `<h2 class="display" style="font-size:1.25rem; margin-top:10px;">Your orders</h2><p class="sell-note">You haven't placed any orders yet.</p>`;
+      return;
+    }
+    el.innerHTML = `<h2 class="display" style="font-size:1.25rem; margin-top:10px;">Your orders</h2>` + orders.map(o=>`
+      <div class="order-summary" style="margin-top:12px;">
+        <div class="line" style="font-weight:700;"><span>Order ${o.id.slice(0,8)}</span><span>${o.paymentStatus==='pending'?'Payment pending':o.paymentStatus}</span></div>
+        <div class="line"><span>Placed</span><span>${new Date(o.createdAt).toLocaleString()}</span></div>
+        ${o.items.map(i=>`<div class="line"><span>${i.name} × ${i.qty}</span><span class="mono">₹${(i.price*i.qty).toFixed(2)}</span></div>`).join('')}
+        <div class="line" style="font-weight:700; border-top:1px solid var(--line); margin-top:6px; padding-top:8px;"><span>Total</span><span class="mono">₹${Number(o.total).toFixed(2)}</span></div>
+        ${o.paymentStatus==='paid' ? `<div id="downloads-${o.id}" style="margin-top:10px;"><span class="sell-note">Checking downloads…</span></div>` : ''}
+      </div>
+    `).join('');
+    for(const o of orders.filter(x=>x.paymentStatus==='paid')){
+      try{
+        const files = await mnApi('/api/orders/'+encodeURIComponent(o.id)+'/downloads');
+        const d = document.getElementById('downloads-'+o.id);
+        if(d) d.innerHTML = files.length ? files.map(f=>`<a class="checkout-btn" style="display:block;text-align:center;text-decoration:none;margin-top:6px;" href="${f.url}">Download ${f.name}</a>`).join('') : `<span class="sell-note">Digital delivery is being prepared.</span>`;
+      }catch(e){ const d=document.getElementById('downloads-'+o.id); if(d) d.innerHTML='<span class="sell-note">Downloads unavailable right now.</span>'; }
+    }
+  } catch(err) {
+    document.getElementById('ordersContent').innerHTML = `<h2 class="display" style="font-size:1.25rem; margin-top:10px;">Your orders</h2><p class="sell-note">${err.message || 'Could not load your orders — please try again.'}</p>`;
+  }
+}
+
+/* ================= SELL MODAL ================= */
+function openSell(e, custom){
+  if(e) e.preventDefault();
+  document.getElementById('sellContent').innerHTML = `
+    <h2 class="display" style="font-size:1.25rem; margin-top:10px;">${custom ? 'Request custom work' : 'List a product'}</h2>
+    <p class="sell-note">${custom ? "Describe what you need and we'll match you with the right seller." : "Tell us what you're selling. Submit the listing for admin review before it appears publicly."}</p>
+    ${custom ? '' : `
+    <div class="field"><label>Product name</label><input type="text" id="s-name" placeholder="e.g. Habit tracker template"></div>
+    <div class="field"><label>Category</label><select id="s-cat">${CATEGORIES.filter(c=>c.id!=='all').map(c=>`<option value="${c.id}">${c.label}</option>`).join('')}</select></div>
+    <div class="field"><label>Price (INR)</label><input type="number" id="s-price" min="1" step="0.01" placeholder="1999"></div>`}
+    <div class="field"><label>${custom ? 'What do you need?' : 'Short description'}</label><textarea id="s-desc" rows="3" placeholder="${custom ? 'e.g. A landing page in Framer with copy included' : 'What does a buyer get?'}"></textarea></div>
+    <button class="pay-btn" id="submitListing" style="background:var(--gold); color:var(--navy);">${custom ? 'Send request' : 'Submit for review'}</button>
+  `;
+  document.getElementById('submitListing').onclick = async ()=>{
+    if(custom){ closeAllOverlays(); showToast('Please use the service quote form for custom work'); return; }
+    if(!MN_AUTH.user){ closeAllOverlays(); openAuth('login'); return; }
+    const name=document.getElementById('s-name').value.trim(); const category=document.getElementById('s-cat').value;
+    const price=Number(document.getElementById('s-price').value); const description=document.getElementById('s-desc').value.trim();
+    if(!name || !description || !Number.isFinite(price) || price<=0){ showToast('Enter a product name, description and valid INR price'); return; }
+    const btn=document.getElementById('submitListing'); btn.disabled=true; btn.textContent='Submitting…';
+    try { await mnApi('/api/products',{method:'POST',body:JSON.stringify({name,description,price,category})}); closeAllOverlays(); showToast('Listing submitted for admin review'); await loadProducts(); renderCatGrid(); renderTrending(); renderGrid(); }
+    catch(err){ showToast(err.message||'Could not submit listing'); btn.disabled=false; btn.textContent='Submit for review'; }
+  };
+  showOverlay('sellModal');
+  return false;
+}
+
+/* ================= SERVICES / QUOTES ================= */
+function renderServiceGrid(){
+  const g = document.getElementById('serviceGrid'); if(!g) return; g.innerHTML='';
+  SERVICE_LINES.forEach(s=>{
+    const el = document.createElement('div'); el.className='cat-tile';
+    el.innerHTML = `
+      <div class="imgwrap">
+        <div class="cbadge" style="background:var(--navy-3);">${ICONS.services}</div>
+        <img src="${catImg('svc-'+s.id,300,300)}" alt="" loading="lazy" onerror="this.style.display='none'">
+      </div>
+      <div class="name">${esc(s.label)}</div>
+      <div class="count">${esc(s.blurb)}</div>
+    `;
+    el.onclick = ()=>openServiceDetail(null, s.id);
+    g.appendChild(el);
+  });
+}
+// e: the triggering event when called from an <a>/<button> onclick (or
+// null when called programmatically, e.g. from a service card's click
+// handler) — same convention as filterCat(e, id). serviceId: one of
+// SERVICE_LINES' ids to pre-select, or null/undefined for a generic
+// request where the visitor picks a service line themselves.
+function openServiceDetail(e, serviceId){
+  if(e) e.preventDefault();
+  const svc = SERVICE_LINES.find(s=>s.id===serviceId) || null;
+  const user = MN_AUTH.user;
+  document.getElementById('sellContent').innerHTML = `
+    <h2 class="display" style="font-size:1.25rem; margin-top:10px;">${svc ? esc(svc.label) : 'Request a quote'}</h2>
+    <p class="sell-note">${svc ? esc(svc.blurb) : "Tell us what you need and which of our services fits best — we'll follow up with a quote."}</p>
+    <div class="field"><label>Your name</label><input type="text" id="q-name" value="${esc(user?user.name:'')}"></div>
+    <div class="field"><label>Email</label><input type="email" id="q-email" value="${esc(user?user.email:'')}"></div>
+    <div class="field"><label>Company (optional)</label><input type="text" id="q-company" placeholder="Your company name"></div>
+    <div class="field"><label>Service</label><select id="q-service">${SERVICE_LINES.map(s=>`<option value="${s.id}" ${s.id===serviceId?'selected':''}>${esc(s.label)}</option>`).join('')}</select></div>
+    <div class="field"><label>Budget</label><select id="q-budget">
+      <option value="">Select a range</option>
+      <option value="under-1k">Under ₹1,00,000</option>
+      <option value="1k-5k">₹1,00,000 – ₹5,00,000</option>
+      <option value="5k-15k">₹5,00,000 – ₹15,00,000</option>
+      <option value="15k-plus">₹15,00,000+</option>
+      <option value="not-sure">Not sure yet</option>
+    </select></div>
+    <div class="field"><label>Timeline</label><select id="q-timeline">
+      <option value="">Select a timeline</option>
+      <option value="asap">As soon as possible</option>
+      <option value="within-2-weeks">Within 2 weeks</option>
+      <option value="within-a-month">Within a month</option>
+      <option value="flexible">Flexible</option>
+    </select></div>
+    <div class="field"><label>Project details</label><textarea id="q-details" rows="4" placeholder="Tell us what you need, your goals, and any constraints"></textarea></div>
+    <button class="pay-btn" id="submitQuote" style="background:var(--gold); color:var(--navy);">Request a quote</button>
+  `;
+  document.getElementById('submitQuote').onclick = submitQuoteRequest;
+  showOverlay('sellModal');
+  return false;
+}
+async function submitQuoteRequest(){
+  const btn = document.getElementById('submitQuote');
+  const name = document.getElementById('q-name').value.trim();
+  const email = document.getElementById('q-email').value.trim();
+  const company = document.getElementById('q-company').value.trim();
+  const serviceLine = document.getElementById('q-service').value;
+  const budget = document.getElementById('q-budget').value;
+  const timeline = document.getElementById('q-timeline').value;
+  const details = document.getElementById('q-details').value.trim();
+  if(!name || !email || !details){ showToast('Name, email and project details are required'); return; }
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    await mnApi('/api/quotes', { method:'POST', body: JSON.stringify({ name, email, company, serviceLine, budget, timeline, details }) });
+    document.getElementById('sellContent').innerHTML = `
+      <div class="confirm-mark">✓</div>
+      <h2 class="confirm-title display">Request sent</h2>
+      <p class="confirm-sub">We'll follow up at ${esc(email)} with a quote.</p>
+      <button class="done-btn" id="doneQuoteBtn">Close</button>
+    `;
+    document.getElementById('doneQuoteBtn').onclick = closeAllOverlays;
+  } catch(err) {
+    showToast(err.message || 'Could not send your request — please try again');
+    btn.disabled = false; btn.textContent = 'Request a quote';
+  }
+}
+
+/* ================= NEWSLETTER ================= */
+function subscribeNewsletter(e){
+  e.preventDefault();
+  const email = document.getElementById('nlEmail').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('Enter a valid email'); return false; }
+  document.getElementById('nlEmail').value='';
+  showToast('Subscribed — welcome aboard');
+  return false;
+}
+
+/* ================= TOAST ================= */
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeAllOverlays(); } });
+</script>
+<script>
+const MN_AUTH={token:localStorage.getItem('mn_token')||'',user:null};
+async function mnApi(path,opts={}){opts.headers=Object.assign({'Content-Type':'application/json'},opts.headers||{});if(MN_AUTH.token)opts.headers.Authorization='Bearer '+MN_AUTH.token;const r=await fetch(path,opts);const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||'Request failed');return data;}
+function openAuth(mode='login'){const el=document.getElementById('authContent');el.innerHTML=`<h2 class="display" style="font-size:1.25rem;margin-top:10px;">${mode==='login'?'Welcome back':'Create your MN Group account'}</h2><p class="sell-note">${mode==='login'?'Sign in to your account.':'Create a buyer account to purchase or list products.'}</p>${mode==='register'?'<div class="field"><label>Name</label><input id="authName" autocomplete="name"></div>':''}<div class="field"><label>Email</label><input id="authEmail" type="email" autocomplete="email"></div><div class="field"><label>Password</label><input id="authPassword" type="password" minlength="8" autocomplete="current-password"></div><button class="checkout-btn" id="authSubmit">${mode==='login'?'Login':'Register'}</button><p style="margin-top:12px;font-size:.8rem;color:var(--ink-soft);text-align:center;cursor:pointer" onclick="openAuth('${mode==='login'?'register':'login'}')">${mode==='login'?'Need an account? Register':'Already registered? Login'}</p>`;document.getElementById('authSubmit').onclick=async()=>{try{const email=document.getElementById('authEmail').value.trim();const password=document.getElementById('authPassword').value;const body=mode==='register'?{name:document.getElementById('authName').value.trim(),email,password}:{email,password};const data=await mnApi('/api/auth/'+mode,{method:'POST',body:JSON.stringify(body)});MN_AUTH.token=data.token;MN_AUTH.user=data.user;localStorage.setItem('mn_token',data.token);closeAllOverlays();showToast('Welcome, '+data.user.name);updateAuthUI();}catch(e){showToast(e.message);}};showOverlay('authModal');}
+async function restoreMNUser(){if(!MN_AUTH.token)return;try{MN_AUTH.user=(await mnApi('/api/auth/me')).user;updateAuthUI();}catch{localStorage.removeItem('mn_token');MN_AUTH.token='';}}
+function updateAuthUI(){const btns=document.querySelectorAll('.auth-btn');if(!btns.length)return;if(MN_AUTH.user){btns[0].textContent=MN_AUTH.user.role==='admin'?'Admin':'Account';btns[0].onclick=()=>{if(MN_AUTH.user.role==='admin')location.href='/admin.html';else openMyOrders()};btns[1].textContent='Logout';btns[1].onclick=()=>{localStorage.removeItem('mn_token');MN_AUTH.token='';MN_AUTH.user=null;location.reload();}}}
+restoreMNUser();
+const paymentResult=new URLSearchParams(location.search).get('payment');
+if(paymentResult==='success') showToast('Payment submitted — your order will appear after payment confirmation.');
+if(paymentResult==='failure') showToast('Payment was not completed. Your order remains unpaid.');
+(async()=>{ await loadProducts(); renderCatGrid(); renderTrending(); renderGrid(); })();
+</script>
+
+<!-- AI support widget script: fully self-contained, own state object
+     (aiChatState), never reads or writes the storefront's `state` object
+     or the modal overlay system. No call to /api/ai/chat happens on page
+     load or on opening the panel — only when the visitor sends a message. -->
+<script>
+let aiChatState = { history: [], sending: false, opened: false };
+
+function renderAiMessages(){
+  const body = document.getElementById('aiPanelBody');
+  body.innerHTML = aiChatState.history.map(m=>{
+    const cls = m.role==='user' ? 'user' : (m.role==='system-note' ? 'system-note' : 'assistant');
+    return `<div class="ai-msg ${cls}">${esc(m.content)}</div>`;
+  }).join('') + (aiChatState.sending ? `<div class="ai-msg assistant">…</div>` : '');
+  body.scrollTop = body.scrollHeight;
+}
+
+function toggleAiPanel(){
+  const panel = document.getElementById('aiPanel');
+  const open = panel.classList.toggle('open');
+  if(open && !aiChatState.opened){
+    aiChatState.opened = true;
+    aiChatState.history.push({ role:'system-note', content:'Ask about MN Group products, pricing, categories, or services. This assistant only answers from published site information.' });
+    renderAiMessages();
+  }
+  if(open) document.getElementById('aiInput').focus();
+}
+
+async function sendAiMessage(){
+  if(aiChatState.sending) return;
+  const input = document.getElementById('aiInput');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  aiChatState.history.push({ role:'user', content:text });
+  aiChatState.sending = true;
+  document.getElementById('aiSendBtn').disabled = true;
+  renderAiMessages();
+  try{
+    // Only the last few real user/assistant turns are sent — system-note
+    // entries (the local welcome message) are UI-only and never sent to
+    // the server or the AI provider.
+    const toSend = aiChatState.history.filter(m=>m.role==='user'||m.role==='assistant').slice(-12);
+    const res = await fetch('/api/ai/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ messages: toSend }),
+    });
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok){
+      aiChatState.history.push({ role:'system-note', content: data.error || 'AI support is currently unavailable — please try again later.' });
+    } else {
+      aiChatState.history.push({ role:'assistant', content: data.reply });
+    }
+  }catch(e){
+    aiChatState.history.push({ role:'system-note', content:'AI support is currently unavailable — please check your connection and try again.' });
+  }finally{
+    aiChatState.sending = false;
+    document.getElementById('aiSendBtn').disabled = false;
+    renderAiMessages();
+  }
+}
+</script>
+
+</body>
+</html>

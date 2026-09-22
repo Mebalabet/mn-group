@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: mn-group
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: npm ci
+    preDeployCommand: npm run db:migrate
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mn-group-db
+          property: connectionString
+      - key: TRUST_PROXY
+        value: "true"
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_REGION
+        sync: false
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_PUBLIC_BASE_URL
+        sync: false
+
+databases:
+  - name: mn-group-db
+    region: singapore
+    plan: free
