@@ -250,8 +250,8 @@ app.post('/api/ai/chat', aiChatLimiter, async (req, res, next) => {
     }
     const cleanMessages = [];
     for (const m of messages) {
-      if (!m || m.role !== 'user' || typeof m.content !== 'string') {
-        return res.status(400).json({ error: 'Each message must be a user message with string content' });
+      if (!m || (m.role !== 'user' && m.role !== 'assistant') || typeof m.content !== 'string') {
+        return res.status(400).json({ error: 'Each message must be a user or assistant message with string content' });
       }
       if (m.content.length > AI_MAX_MESSAGE_LENGTH) {
         return res.status(400).json({ error: `Each message is limited to ${AI_MAX_MESSAGE_LENGTH} characters` });

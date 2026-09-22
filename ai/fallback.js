@@ -158,7 +158,26 @@ function fallbackReply(message, context = {}) {
     return 'Courses are an MN Group category. The currently confirmed information does not include an LMS, certificates, or progress tracking, so I will not claim those features.';
   }
 
-  if (hasAny(query, ['seller', 'sell on mn group', 'become a seller', 'start selling', 'submit product'])) {
+  if (hasAny(query, [
+    'seller',
+    'sell on mn group',
+    'sell my template',
+    'sell a template',
+    'sell templates',
+    'sell my product',
+    'sell a product',
+    'list my template',
+    'list a template',
+    'list my product',
+    'list a product',
+    'upload a template',
+    'upload my template',
+    'become a seller',
+    'start selling',
+    'submit product',
+    'submit my product',
+    'submit a product'
+  ])) {
     return 'Logged-in users can submit products. Normal registration creates a buyer account; seller/admin privileges are not granted simply because someone is the first registered user. Non-admin product submissions require administrative approval before appearing in the approved catalog.';
   }
 
