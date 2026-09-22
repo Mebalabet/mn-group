@@ -447,10 +447,6 @@
     <div class="wrap mainbar-sub">
       <nav class="subnav">
         <a href="#" onclick="return resetHome(event)">Home</a>
-        <div class="cat-dropdown">
-          <button class="subnav-link" id="catDropBtn" onclick="toggleCatDropdown(event)">Categories ▾</button>
-          <div class="cat-dropdown-panel" id="catDropPanel"></div>
-        </div>
         <a href="#" onclick="return openSell(event)">Sellers</a>
         <a href="#" onclick="return openServiceDetail(event, null)">Services</a>
         <a href="#about" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'}); return false;">About us</a>
@@ -756,19 +752,6 @@ function restartHeroTimer(){ clearInterval(heroTimer); heroTimer = setInterval((
 renderHero();
 
 /* ================= NAV / CATEGORY ================= */
-const catDropPanel = document.getElementById('catDropPanel');
-CATEGORIES.forEach(c=>{
-  const b = document.createElement('button'); b.textContent = c.id==='all' ? 'All categories' : c.label; b.dataset.cat = c.id;
-  b.onclick = ()=>{ filterCat(null, c.id); catDropPanel.classList.remove('open'); };
-  catDropPanel.appendChild(b);
-});
-function toggleCatDropdown(e){
-  e.preventDefault(); e.stopPropagation();
-  catDropPanel.classList.toggle('open');
-}
-document.addEventListener('click', (e)=>{
-  if(!e.target.closest('.cat-dropdown')) catDropPanel.classList.remove('open');
-});
 function filterCat(e, id){
   if(e) e.preventDefault();
   closeAllOverlays();
@@ -1281,7 +1264,7 @@ function showToast(msg){
   clearTimeout(toastTimer);
   toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
 }
-document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeAllOverlays(); catDropPanel.classList.remove('open'); } });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeAllOverlays(); } });
 </script>
 <script>
 const MN_AUTH={token:localStorage.getItem('mn_token')||'',user:null};
