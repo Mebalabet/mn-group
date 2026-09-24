@@ -1,7 +1,217 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MN Group Admin</title><style>body{font-family:Inter,Arial,sans-serif;margin:0;background:#eef3fb;color:#12213d}.wrap{max-width:1100px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 8px 25px #183b6720}.num{font-size:28px;font-weight:800}.muted{color:#667085;font-size:13px}table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden}th,td{padding:12px;border-bottom:1px solid #e7ebf2;text-align:left;font-size:14px}button{padding:8px 12px;border:0;border-radius:8px;cursor:pointer}.approve{background:#1e9e6b;color:#fff}.reject{background:#d6415a;color:#fff}.section{margin-top:24px}@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}table{font-size:12px;display:block;overflow:auto}}</style></head><body><div class="wrap"><div class="top"><div><h1>MN Group Admin</h1><div class="muted">Protected administration</div></div><button onclick="location.href='/'">Back to marketplace</button></div><div id="app" style="margin-top:22px">Loading…</div></div><script>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MN Group Admin</title>
+<style>
+  /* Same palette/tokens as the storefront (public/index.html) for visual
+     consistency — dark navy base, blue/purple/pink brand gradient, gold
+     highlight, translucent glass cards. Nothing invented here. */
+  :root{
+    --navy:#0B1220; --navy-2:#151B33; --navy-3:#1E2A52;
+    --bg-1:#1e1b4b; --bg-2:#0f172a; --bg-3:#020617;
+    --gold:#fbbf24; --gold-deep:#d99a1b;
+    --accent-blue:#38bdf8; --accent-purple:#a78bfa; --accent-pink:#f472b6;
+    --grad-brand:linear-gradient(135deg, var(--accent-blue), var(--accent-purple), var(--accent-pink));
+    --glass-bg:rgba(21,27,51,0.62); --glass-bg-soft:rgba(21,27,51,0.4); --glass-border:rgba(255,255,255,0.12);
+    --ink:#F1F5F9; --ink-soft:#94A3B8;
+    --green:#22c78a; --green-bg:rgba(34,199,138,0.15); --red:#f87171; --red-bg:rgba(248,113,113,0.15);
+    --radius:14px; --radius-sm:9px;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; color:var(--ink); font-family:Inter,Arial,sans-serif; -webkit-font-smoothing:antialiased;
+    background:radial-gradient(circle at 15% 10%, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%) fixed;
+  }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; }
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:30; display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px; background:rgba(11,18,32,0.78); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--glass-border);
+  }
+  .brand{ font-weight:800; font-size:1.05rem; }
+  .brand span{
+    background:var(--grad-brand); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    margin-left:4px;
+  }
+  .back-btn{
+    background:rgba(255,255,255,0.08); border:1px solid var(--glass-border); color:var(--ink);
+    border-radius:999px; padding:9px 16px; font-size:0.82rem; font-weight:600; min-height:38px;
+  }
+  .back-btn:hover{ background:rgba(255,255,255,0.14); }
+
+  /* ---------- layout: sidebar (desktop) / horizontal scroll nav (mobile) ---------- */
+  .layout{ display:flex; align-items:flex-start; max-width:1280px; margin:0 auto; }
+  .sidebar{
+    position:sticky; top:65px; flex-shrink:0; width:200px; padding:18px 10px; display:flex; flex-direction:column; gap:2px;
+    height:calc(100vh - 65px); overflow-y:auto;
+  }
+  .sidebar a{
+    padding:10px 14px; border-radius:var(--radius-sm); font-size:0.86rem; font-weight:600; color:var(--ink-soft);
+  }
+  .sidebar a:hover{ color:#fff; background:rgba(255,255,255,0.06); }
+  main#app{ flex:1; min-width:0; padding:18px 18px 60px; }
+
+  @media (max-width:860px){
+    .layout{ flex-direction:column; }
+    .sidebar{
+      position:sticky; top:57px; width:100%; height:auto; flex-direction:row; overflow-x:auto; overflow-y:hidden;
+      padding:8px 12px; gap:4px; background:rgba(11,18,32,0.7); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--glass-border); scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{ display:none; }
+    .sidebar a{ white-space:nowrap; padding:8px 13px; }
+    main#app{ padding:14px 12px 60px; }
+  }
+
+  /* ---------- panels / cards ---------- */
+  .panel{ padding-top:22px; scroll-margin-top:130px; }
+  @media (max-width:860px){ .panel{ scroll-margin-top:110px; } }
+  .panel h2{ font-size:1.1rem; font-weight:700; margin:0 0 12px; }
+  .panel-sub{ margin-top:26px; }
+  .card{
+    background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--glass-border); border-radius:var(--radius); padding:16px;
+    box-shadow:0 14px 30px rgba(0,0,0,0.35);
+  }
+  .loading-msg{ color:var(--ink-soft); padding:40px 0; text-align:center; }
+  .error-card{ max-width:480px; margin:40px auto; text-align:center; }
+  .error-card b{ color:var(--red); }
+  .error-card p{ color:var(--ink-soft); font-size:0.9rem; }
+
+  /* ---------- dashboard stat grid ---------- */
+  .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  @media (max-width:700px){ .stat-grid{ grid-template-columns:repeat(2,1fr); } }
+  .stat-card{ display:flex; flex-direction:column; gap:4px; }
+  .stat-card .num{ font-size:1.6rem; font-weight:800; }
+  .stat-card .lbl{ font-size:0.76rem; color:var(--ink-soft); }
+  .stat-card.attn .num{ color:var(--gold); }
+
+  /* ---------- tables ---------- */
+  .table-wrap{ overflow-x:auto; }
+  table{ width:100%; border-collapse:collapse; min-width:560px; }
+  th,td{ padding:10px 12px; text-align:left; font-size:0.83rem; border-bottom:1px solid var(--glass-border); white-space:nowrap; }
+  td.wrap-cell{ white-space:normal; min-width:160px; }
+  th{ color:var(--ink-soft); font-weight:600; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; }
+  tr:last-child td{ border-bottom:none; }
+  .muted{ color:var(--ink-soft); font-size:0.78rem; }
+
+  /* ---------- buttons/pills in tables ---------- */
+  table button{
+    border:none; border-radius:var(--radius-sm); padding:7px 12px; font-size:0.78rem; font-weight:700; color:#fff;
+    min-height:34px; margin:2px 3px 2px 0;
+  }
+  .approve{ background:var(--green); }
+  .approve:hover{ opacity:0.88; }
+  .reject{ background:var(--red); }
+  .reject:hover{ opacity:0.88; }
+  table button:not(.approve):not(.reject){ background:rgba(255,255,255,0.1); border:1px solid var(--glass-border); }
+  table button:not(.approve):not(.reject):hover{ background:rgba(255,255,255,0.18); }
+  .status-pill{
+    display:inline-block; padding:3px 10px; border-radius:999px; font-size:0.72rem; font-weight:700; text-transform:capitalize;
+  }
+  .status-pending{ background:rgba(251,191,36,0.16); color:var(--gold); }
+  .status-approved,.status-published,.status-paid,.status-accepted,.status-closed{ background:var(--green-bg); color:var(--green); }
+  .status-rejected,.status-declined,.status-failed{ background:var(--red-bg); color:var(--red); }
+  .status-reviewing,.status-quoted,.status-new,.status-pending_payment{ background:rgba(56,189,248,0.16); color:var(--accent-blue); }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">MN Group<span>Admin</span></div>
+  <button class="back-btn" onclick="location.href='/'">Back to Marketplace</button>
+</header>
+<div class="layout">
+  <nav class="sidebar">
+    <a href="#dashboard">Dashboard</a>
+    <a href="#products">Products</a>
+    <a href="#orders">Orders</a>
+    <a href="#payments">Payments</a>
+    <a href="#quotes">Quotes</a>
+    <a href="#users">Users</a>
+    <a href="#audit">Audit Log</a>
+  </nav>
+  <main id="app"><div class="loading-msg">Loading…</div></main>
+</div>
+<script>
 const token=localStorage.getItem('mn_token');if(!token)location.href='/';
 async function api(p,o={}){o.headers=Object.assign({'Content-Type':'application/json',Authorization:'Bearer '+token},o.headers||{});let r=await fetch('/api'+p,o),d=await r.json();if(!r.ok)throw Error(d.error||'Request failed');return d}
-async function load(){try{const [me,stats,products,users,orders,quotes,audit,paymentEvents]=await Promise.all([api('/auth/me'),api('/admin/dashboard'),api('/admin/products'),api('/admin/users'),api('/admin/orders'),api('/admin/quotes'),api('/admin/audit'),api('/admin/payment-events')]);if(me.user.role!=='admin')throw Error('Admin access required');document.getElementById('app').innerHTML=`<div class="grid"><div class="card"><div class="num">${stats.users}</div><div class="muted">Users</div></div><div class="card"><div class="num">${stats.products}</div><div class="muted">Products</div></div><div class="card"><div class="num">${stats.pendingProducts}</div><div class="muted">Pending approvals</div></div><div class="card"><div class="num">${stats.orders}</div><div class="muted">Orders</div></div><div class="card"><div class="num">₹${Number(stats.revenue||0).toFixed(2)}</div><div class="muted">Revenue (paid orders, INR)</div></div><div class="card"><div class="num">${stats.pendingPayments||0}</div><div class="muted">Orders awaiting payment</div></div><div class="card"><div class="num">${stats.quotes}</div><div class="muted">Quotes</div></div><div class="card"><div class="num">${Object.entries(stats.quotesByStatus||{}).map(([k,v])=>`${esc(k)}: ${v}`).join(', ')||'—'}</div><div class="muted">Quotes by status</div></div></div>` + `<div class="section card"><h2>Listing approvals</h2><table><thead><tr><th>Name</th><th>Seller</th><th>Status</th><th>Action</th></tr></thead><tbody>${products.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.sellerId)}</td><td>${p.status}</td><td>${p.status==='pending'?`<button class="approve" onclick="setStatus('${p.id}','approved')">Approve</button> <button class="reject" onclick="setStatus('${p.id}','rejected')">Reject</button>`:'—'}</td></tr>`).join('')||'<tr><td colspan="4">No listings yet.</td></tr>'}</tbody></table></div><div class="section card"><h2>Orders</h2><table><thead><tr><th>Order</th><th>Buyer</th><th>Items</th><th>Total</th><th>Payment</th><th>Placed</th></tr></thead><tbody>${orders.map(o=>`<tr><td>${esc(o.id.slice(0,8))}</td><td>${esc(o.buyerId.slice(0,8))}</td><td>${o.items.map(i=>esc(i.name)+' ×'+i.qty).join(', ')}</td><td>₹${Number(o.total).toFixed(2)}</td><td>${esc(o.paymentStatus)}</td><td>${new Date(o.createdAt).toLocaleString()}</td></tr>`).join('')||'<tr><td colspan="6">No orders yet.</td></tr>'}</tbody></table></div><div class="section card"><h2>Digital files</h2><table><thead><tr><th>Product</th><th>File</th><th>Payhip</th><th>Seller</th><th>Status</th><th>Manage</th></tr></thead><tbody>${products.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.fileName||'—')}</td><td>${p.payhipUrl?`<a href="${esc(p.payhipUrl)}" target="_blank" rel="noopener">Open</a>`:'—'}</td><td>${esc(p.sellerId||'—')}</td><td>${esc(p.status)}</td><td><button onclick="setFile('${p.id}',${JSON.stringify(p.fileName||'')})">File</button> <button onclick="setPayhip('${p.id}',${JSON.stringify(p.payhipUrl||'')})">Payhip</button></td></tr>`).join('')||'<tr><td colspan="6">No products yet.</td></tr>'}</tbody></table></div><div class="section card"><h2>Payment events</h2><table><thead><tr><th>Time</th><th>Provider</th><th>Order</th><th>Status</th><th>Event ref</th></tr></thead><tbody>${paymentEvents.map(e=>`<tr><td>${new Date(e.createdAt).toLocaleString()}</td><td>${esc(e.provider)}</td><td>${esc((e.orderId||'').slice(0,8))}</td><td>${esc(e.status)}</td><td>${esc(e.eventId)}</td></tr>`).join('')||'<tr><td colspan="5">No payment events recorded yet.</td></tr>'}</tbody></table></div><div class="section card"><h2>Users</h2><table><thead><tr><th>Name</th><th>Email</th><th>Role</th></tr></thead><tbody>${users.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${u.role}</td></tr>`).join('')}</tbody></table></div><div class="section card"><h2>Quote requests</h2><table><thead><tr><th>Name</th><th>Company</th><th>Service</th><th>Budget / Timeline</th><th>Details</th><th>Status</th><th>Action</th></tr></thead><tbody>${quotes.map(q=>`<tr><td>${esc(q.name)}<br><span class="muted">${esc(q.email)}</span></td><td>${esc(q.company||'—')}</td><td>${esc(q.serviceLine||'—')}</td><td>${esc(q.budget||'—')} / ${esc(q.timeline||'—')}</td><td>${esc(q.details)}</td><td>${esc(q.status)}</td><td>${quoteActions(q.status,q.id)}<br><button onclick="setQuoteMessage('${q.id}', ${JSON.stringify(q.customerMessage||'')})">Message</button> <button onclick="setQuoteNote('${q.id}', ${JSON.stringify(q.internalNote||'')})">Note</button></td></tr>`).join('')||'<tr><td colspan="7">No requests.</td></tr>'}</tbody></table></div>` + `<div class="section card"><h2>Audit log</h2><table><thead><tr><th>Time</th><th>Action</th><th>Details</th></tr></thead><tbody>${audit.slice(0,30).map(a=>`<tr><td>${new Date(a.createdAt).toLocaleString()}</td><td>${esc(a.action)}</td><td>${esc(JSON.stringify(a.details))}</td></tr>`).join('')}</tbody></table></div>`;}catch(e){document.getElementById('app').innerHTML='<div class="card"><b>'+esc(e.message)+'</b><p>Return to the marketplace and register/login with the admin account.</p></div>';}}
+function statusPill(s){return `<span class="status-pill status-${esc(String(s||'').toLowerCase())}">${esc(s)}</span>`}
+async function load(){
+  try{
+    const [me,stats,products,users,orders,quotes,audit,paymentEvents]=await Promise.all([api('/auth/me'),api('/admin/dashboard'),api('/admin/products'),api('/admin/users'),api('/admin/orders'),api('/admin/quotes'),api('/admin/audit'),api('/admin/payment-events')]);
+    if(me.user.role!=='admin')throw Error('Admin access required');
+    document.getElementById('app').innerHTML =
+      `<section id="dashboard" class="panel">
+        <h2>Dashboard</h2>
+        <div class="stat-grid">
+          <div class="card stat-card"><div class="num">${stats.users}</div><div class="lbl">Users</div></div>
+          <div class="card stat-card"><div class="num">${stats.products}</div><div class="lbl">Products</div></div>
+          <div class="card stat-card attn"><div class="num">${stats.pendingProducts}</div><div class="lbl">Pending approvals</div></div>
+          <div class="card stat-card"><div class="num">${stats.orders}</div><div class="lbl">Orders</div></div>
+          <div class="card stat-card"><div class="num">₹${Number(stats.revenue||0).toFixed(2)}</div><div class="lbl">Revenue (paid orders, INR)</div></div>
+          <div class="card stat-card attn"><div class="num">${stats.pendingPayments||0}</div><div class="lbl">Orders awaiting payment</div></div>
+          <div class="card stat-card"><div class="num">${stats.quotes}</div><div class="lbl">Quotes</div></div>
+          <div class="card stat-card"><div class="num" style="font-size:0.95rem;font-weight:700;">${Object.entries(stats.quotesByStatus||{}).map(([k,v])=>`${esc(k)}: ${v}`).join(', ')||'—'}</div><div class="lbl">Quotes by status</div></div>
+        </div>
+      </section>
+
+      <section id="products" class="panel">
+        <h2>Products</h2>
+        <div class="card">
+          <h3 style="margin:0 0 10px;font-size:0.92rem;">Listing approvals</h3>
+          <div class="table-wrap"><table><thead><tr><th>Name</th><th>Seller</th><th>Status</th><th>Action</th></tr></thead><tbody>${products.map(p=>`<tr><td class="wrap-cell">${esc(p.name)}</td><td>${esc(p.sellerId)}</td><td>${statusPill(p.status)}</td><td>${p.status==='pending'?`<button class="approve" onclick="setStatus('${p.id}','approved')">Approve</button><button class="reject" onclick="setStatus('${p.id}','rejected')">Reject</button>`:'—'}</td></tr>`).join('')||'<tr><td colspan="4" class="muted">No listings yet.</td></tr>'}</tbody></table></div>
+        </div>
+        <div class="card panel-sub">
+          <h3 style="margin:0 0 10px;font-size:0.92rem;">Digital files</h3>
+          <div class="table-wrap"><table><thead><tr><th>Product</th><th>File</th><th>Payhip</th><th>Seller</th><th>Status</th><th>Manage</th></tr></thead><tbody>${products.map(p=>`<tr><td class="wrap-cell">${esc(p.name)}</td><td>${esc(p.fileName||'—')}</td><td>${p.payhipUrl?`<a href="${esc(p.payhipUrl)}" target="_blank" rel="noopener" style="color:var(--accent-blue);">Open</a>`:'—'}</td><td>${esc(p.sellerId||'—')}</td><td>${statusPill(p.status)}</td><td><button onclick="setFile('${p.id}',${JSON.stringify(p.fileName||'')})">File</button><button onclick="setPayhip('${p.id}',${JSON.stringify(p.payhipUrl||'')})">Payhip</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">No products yet.</td></tr>'}</tbody></table></div>
+        </div>
+      </section>
+
+      <section id="orders" class="panel">
+        <h2>Orders</h2>
+        <div class="card">
+          <div class="table-wrap"><table><thead><tr><th>Order</th><th>Buyer</th><th>Items</th><th>Total</th><th>Payment</th><th>Placed</th></tr></thead><tbody>${orders.map(o=>`<tr><td>${esc(o.id.slice(0,8))}</td><td>${esc(o.buyerId.slice(0,8))}</td><td class="wrap-cell">${o.items.map(i=>esc(i.name)+' ×'+i.qty).join(', ')}</td><td>₹${Number(o.total).toFixed(2)}</td><td>${statusPill(o.paymentStatus)}</td><td>${new Date(o.createdAt).toLocaleString()}</td></tr>`).join('')||'<tr><td colspan="6" class="muted">No orders yet.</td></tr>'}</tbody></table></div>
+        </div>
+      </section>
+
+      <section id="payments" class="panel">
+        <h2>Payments</h2>
+        <div class="card">
+          <div class="table-wrap"><table><thead><tr><th>Time</th><th>Provider</th><th>Order</th><th>Status</th><th>Event ref</th></tr></thead><tbody>${paymentEvents.map(e=>`<tr><td>${new Date(e.createdAt).toLocaleString()}</td><td>${esc(e.provider)}</td><td>${esc((e.orderId||'').slice(0,8))}</td><td>${statusPill(e.status)}</td><td>${esc(e.eventId)}</td></tr>`).join('')||'<tr><td colspan="5" class="muted">No payment events recorded yet.</td></tr>'}</tbody></table></div>
+        </div>
+      </section>
+
+      <section id="quotes" class="panel">
+        <h2>Quotes</h2>
+        <div class="card">
+          <div class="table-wrap"><table><thead><tr><th>Name</th><th>Company</th><th>Service</th><th>Budget / Timeline</th><th>Details</th><th>Status</th><th>Action</th></tr></thead><tbody>${quotes.map(q=>`<tr><td class="wrap-cell">${esc(q.name)}<br><span class="muted">${esc(q.email)}</span></td><td>${esc(q.company||'—')}</td><td>${esc(q.serviceLine||'—')}</td><td>${esc(q.budget||'—')} / ${esc(q.timeline||'—')}</td><td class="wrap-cell">${esc(q.details)}</td><td>${statusPill(q.status)}</td><td>${quoteActions(q.status,q.id)}<br><button onclick="setQuoteMessage('${q.id}', ${JSON.stringify(q.customerMessage||'')})">Message</button><button onclick="setQuoteNote('${q.id}', ${JSON.stringify(q.internalNote||'')})">Note</button></td></tr>`).join('')||'<tr><td colspan="7" class="muted">No requests.</td></tr>'}</tbody></table></div>
+        </div>
+      </section>
+
+      <section id="users" class="panel">
+        <h2>Users</h2>
+        <div class="card">
+          <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th></tr></thead><tbody>${users.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.role)}</td></tr>`).join('')}</tbody></table></div>
+        </div>
+      </section>
+
+      <section id="audit" class="panel">
+        <h2>Audit Log</h2>
+        <div class="card">
+          <div class="table-wrap"><table><thead><tr><th>Time</th><th>Action</th><th>Details</th></tr></thead><tbody>${audit.slice(0,30).map(a=>`<tr><td>${new Date(a.createdAt).toLocaleString()}</td><td>${esc(a.action)}</td><td class="wrap-cell">${esc(JSON.stringify(a.details))}</td></tr>`).join('')}</tbody></table></div>
+        </div>
+      </section>`;
+  }catch(e){
+    document.getElementById('app').innerHTML='<div class="card error-card"><b>'+esc(e.message)+'</b><p>Return to the marketplace and register/login with the admin account.</p></div>';
+  }
+}
 async function setStatus(id,status){await api('/admin/products/'+id,{method:'PATCH',body:JSON.stringify({status})});load()}
 async function setFile(id,current){const value=prompt('Enter the uploaded file ID (or leave blank to detach):',current||'');if(value===null)return;await api('/admin/products/'+id,{method:'PATCH',body:JSON.stringify({fileName:value.trim()||null})});load()}
 async function setPayhip(id,current){const value=prompt('Paste the Payhip product URL (or leave blank to clear):',current||'');if(value===null)return;await api('/admin/products/'+id,{method:'PATCH',body:JSON.stringify({payhipUrl:value.trim()||null})});load()}
@@ -12,4 +222,8 @@ async function setQuoteNote(id,current){const note=prompt('Internal note (never 
 // since this is a separate (browser) runtime from server.js.
 const QUOTE_NEXT={new:[['reviewing','Start review'],['declined','Decline']],reviewing:[['quoted','Send quote'],['declined','Decline']],quoted:[['accepted','Mark accepted'],['declined','Decline']],accepted:[['closed','Close']],declined:[],closed:[]};
 function quoteActions(status,id){return (QUOTE_NEXT[status]||[]).map(([next,label])=>`<button onclick="setQuoteStatus('${id}','${next}')">${label}</button>`).join(' ')||'—'}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}load();</script></body></html>
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+load();
+</script>
+</body>
+</html>
