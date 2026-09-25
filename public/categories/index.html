@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Categories — MN Group</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/base.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="/">Home</a> / Categories</div>
+    <h1 class="display">Shop by category</h1>
+    <p>Find products by category — counts reflect what's currently listed on MN Group.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:14px;">
+  <div class="wrap">
+    <div class="cat-grid" id="catGrid"></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Business services</h2>
+      <span class="result-count">Request a custom quote — no obligation</span>
+    </div>
+    <div class="cat-grid" id="serviceGrid"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<div id="site-overlays"></div>
+
+<script src="/assets/js/shared.js"></script>
+<script src="/assets/js/ai-widget.js"></script>
+<script src="/assets/js/layout.js"></script>
+<script>
+  function renderCategoriesPage(){
+    const g = document.getElementById('catGrid'); g.innerHTML = '';
+    CATEGORIES.filter(c=>c.id!=='all').forEach(c=>{
+      const count = PRODUCTS.filter(p=>p.cat===c.id).length;
+      const el = document.createElement('div'); el.className='cat-tile';
+      el.innerHTML = `
+        <div class="imgwrap">
+          <div class="cbadge" style="background:${CAT_COLOR[c.id]};">${ICONS[c.id]}</div>
+          <img src="${catImg(CAT_SEED[c.id],300,300)}" alt="" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="name">${c.label}</div>
+        <div class="count">${count} products</div>
+      `;
+      el.onclick = ()=>{ location.href = '/products?cat=' + encodeURIComponent(c.id); };
+      g.appendChild(el);
+    });
+  }
+  function renderServiceGridPage(){
+    const g = document.getElementById('serviceGrid'); if(!g) return; g.innerHTML='';
+    SERVICE_LINES.forEach(s=>{
+      const el = document.createElement('div'); el.className='cat-tile';
+      el.innerHTML = `
+        <div class="imgwrap">
+          <div class="cbadge" style="background:var(--navy-3);">${ICONS.services}</div>
+          <img src="${catImg('svc-'+s.id,300,300)}" alt="" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="name">${esc(s.label)}</div>
+        <div class="count">${esc(s.blurb)}</div>
+      `;
+      el.onclick = ()=>openServiceDetail(null, s.id);
+      g.appendChild(el);
+    });
+  }
+  (async ()=>{
+    await loadProducts();
+    renderCategoriesPage();
+    renderServiceGridPage();
+  })();
+</script>
+</body>
+</html>

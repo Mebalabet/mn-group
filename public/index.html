@@ -344,6 +344,9 @@
   .pd-actions .add-btn{ padding:13px; font-size:0.9rem; }
   .pd-actions .buy-btn{ background:var(--gold); color:var(--navy); }
   .pd-actions .buy-btn:hover{ opacity:0.9; }
+  .pd-link-row{ margin-top:14px; }
+  .pd-link-row a{ font-size:0.82rem; color:var(--accent-blue); font-weight:600; }
+  .pd-link-row a:hover{ text-decoration:underline; }
   .steps{ display:flex; gap:6px; padding:16px 24px 0; }
   .step-dot{ flex:1; height:3px; background:var(--glass-border); border-radius:2px; }
   .step-dot.active{ background:var(--accent-blue); }
@@ -447,6 +450,8 @@
     <div class="wrap mainbar-sub">
       <nav class="subnav">
         <a href="#" onclick="return resetHome(event)">Home</a>
+        <a href="/products">Products</a>
+        <a href="/categories">Categories</a>
         <a href="#" onclick="return openSell(event)">Sellers</a>
         <a href="#" onclick="return openServiceDetail(event, null)">Services</a>
         <a href="#about" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'}); return false;">About us</a>
@@ -697,6 +702,17 @@ const TESTIMONIALS = [
 ];
 
 let state = { cat:'all', search:'', cart:{}, overlay:null, activeProduct:null, checkoutStep:1, buyer:{} };
+/* Cart persistence (added for vNext Phase 1A): the cart was previously
+   in-memory only, which was invisible while this was the only page in
+   the app. Now that /products, /product/:id and /categories are real
+   pages a visitor can navigate to (a full page load, not an in-app
+   route), the cart needs to survive that or it would appear to empty
+   itself when leaving the homepage. This mirrors the same 'mn_cart'
+   localStorage key the new pages' shared module uses — same shape,
+   nothing about the cart's behavior/functions otherwise changed. */
+function loadCartFromStorage(){ try { const raw = localStorage.getItem('mn_cart'); if(raw) state.cart = JSON.parse(raw) || {}; } catch { state.cart = {}; } }
+function saveCartToStorage(){ try { localStorage.setItem('mn_cart', JSON.stringify(state.cart)); } catch {} }
+loadCartFromStorage();
 
 /* ================= HERO CAROUSEL ================= */
 const HERO_SLIDES = [
@@ -939,10 +955,10 @@ function showOverlay(which){
 function closeOnBackdrop(e){ if(e.target===e.currentTarget) closeAllOverlays(); }
 
 /* ================= CART ================= */
-function addToCart(id){ state.cart[id] = (state.cart[id]||0)+1; renderGrid(); renderCart(); showToast('Added to cart'); }
-function setQty(id, delta){ if(!state.cart[id]) return; state.cart[id]+=delta; if(state.cart[id]<=0) delete state.cart[id]; renderCart(); renderGrid(); }
-function removeFromCart(id){ delete state.cart[id]; renderCart(); renderGrid(); }
-function cartItems(){ return Object.entries(state.cart).map(([id,qty])=>({p:PRODUCTS.find(p=>p.id===id), qty})); }
+function addToCart(id){ state.cart[id] = (state.cart[id]||0)+1; saveCartToStorage(); renderGrid(); renderCart(); showToast('Added to cart'); }
+function setQty(id, delta){ if(!state.cart[id]) return; state.cart[id]+=delta; if(state.cart[id]<=0) delete state.cart[id]; saveCartToStorage(); renderCart(); renderGrid(); }
+function removeFromCart(id){ delete state.cart[id]; saveCartToStorage(); renderCart(); renderGrid(); }
+function cartItems(){ return Object.entries(state.cart).map(([id,qty])=>({p:PRODUCTS.find(p=>p.id===id), qty})).filter(i=>i.p); }
 function cartTotal(){ return cartItems().reduce((s,i)=>s+i.p.price*i.qty,0); }
 function updateCartCount(){
   const n = Object.values(state.cart).reduce((a,b)=>a+b,0);
@@ -1005,6 +1021,7 @@ function openProduct(id){
         <button class="add-btn ${inCart?'added':''}" id="pdAddBtn" style="padding:13px;">${inCart?'Added ✓':'Add to cart'}</button>
         <button class="add-btn buy-btn" style="padding:13px;" id="pdBuyBtn">${p.payhipUrl?'Buy securely':'Buy now'}</button>
       </div>
+      <div class="pd-link-row"><a href="/product/${encodeURIComponent(p.id)}">View full details page →</a></div>
     </div>
   `;
   document.getElementById('pdAddBtn').onclick = ()=>{ addToCart(id); openProduct(id); };
@@ -1092,7 +1109,7 @@ async function completeOrder(total){
     const order = await mnApi('/api/orders', {method:'POST', body:JSON.stringify({items})});
     const session = await mnApi('/api/orders/'+encodeURIComponent(order.id)+'/pay', {method:'POST', body:JSON.stringify({})});
     state.lastOrder = order;
-    state.cart = {}; renderCart(); renderGrid();
+    state.cart = {}; saveCartToStorage(); renderCart(); renderGrid();
     const form = document.createElement('form');
     form.method = 'POST'; form.action = session.actionUrl; form.style.display = 'none';
     Object.entries(session.fields || {}).forEach(([key,value])=>{

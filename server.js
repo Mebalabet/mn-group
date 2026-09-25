@@ -97,6 +97,27 @@ if (config.corsOrigins.length) {
   });
 }
 
+// ---------------------------------------------------------------------
+// Multi-page frontend routes (vNext Phase 1A/1B).
+//
+// Registered *before* express.static so they answer directly rather
+// than tripping serve-static's directory-redirect behavior (a GET to
+// a directory path with no trailing slash — e.g. /products, which
+// resolves to the public/products/ directory — would otherwise get a
+// 301 to /products/ before falling through to its index.html; putting
+// these routes first avoids that extra hop for a real page navigation).
+//
+// These are plain static-file GETs with no dynamic data injected
+// server-side: /product/:id is resolved entirely client-side (the new
+// page reads the id from location.pathname and looks it up from the
+// existing GET /api/products payload), so this never needs to touch
+// the database directly. None of these paths can collide with
+// /api/*, so API precedence isn't actually at risk here, but they are
+// still registered ahead of every /api/* route below for clarity.
+app.get('/products', (req, res) => res.sendFile(path.join(__dirname, 'public', 'products', 'index.html')));
+app.get('/categories', (req, res) => res.sendFile(path.join(__dirname, 'public', 'categories', 'index.html')));
+app.get('/product/:id', (req, res) => res.sendFile(path.join(__dirname, 'public', 'product', 'index.html')));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Brute-force protection on the two endpoints that matter most for it.

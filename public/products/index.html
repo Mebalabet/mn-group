@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products — MN Group</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/base.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="/">Home</a> / Products</div>
+    <h1 class="display">All products</h1>
+    <p>Browse the full MN Group catalog — software, templates, courses, design assets and plugins.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:14px;">
+  <div class="wrap">
+    <div class="filter-bar">
+      <input type="text" id="pageSearch" placeholder="Search products, e.g. 'invoice template' or 'React'" oninput="document.getElementById('searchInput').value=this.value; renderGrid();">
+      <select id="prodCatSelect"><option value="all">All categories</option></select>
+      <select class="sort-select" id="sortSelect" onchange="renderGrid()">
+        <option value="popular">Sort: Most popular</option>
+        <option value="price-asc">Sort: Price low–high</option>
+        <option value="price-desc">Sort: Price high–low</option>
+        <option value="new">Sort: Newest</option>
+      </select>
+    </div>
+    <div class="toolbar"><span class="result-count" id="resultCount"></span></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<div id="site-overlays"></div>
+
+<script src="/assets/js/shared.js"></script>
+<script src="/assets/js/ai-widget.js"></script>
+<script src="/assets/js/layout.js"></script>
+<script>
+  // Populate the category filter from the shared CATEGORIES list and
+  // honor a ?cat= query param so links from the Categories page can
+  // land here pre-filtered.
+  const catSelect = document.getElementById('prodCatSelect');
+  CATEGORIES.filter(c=>c.id!=='all').forEach(c=>{
+    const o=document.createElement('option'); o.value=c.id; o.textContent=c.label; catSelect.appendChild(o);
+  });
+  const requestedCat = new URLSearchParams(location.search).get('cat');
+  if(requestedCat && CATEGORIES.some(c=>c.id===requestedCat)){
+    state.cat = requestedCat; catSelect.value = requestedCat;
+  }
+  catSelect.onchange = ()=>{ state.cat = catSelect.value; renderGrid(); };
+  const requestedSearch = new URLSearchParams(location.search).get('q');
+  if(requestedSearch){ document.getElementById('pageSearch').value = requestedSearch; }
+
+  (async ()=>{
+    await loadProducts();
+    // #searchInput lives in the header partial (loaded by layout.js) —
+    // wait for it before the first render so currentList() can read it.
+    document.addEventListener('mn:layout-ready', ()=>{
+      const si = document.getElementById('searchInput');
+      if(si && requestedSearch) si.value = requestedSearch;
+      renderGrid();
+    }, { once:true });
+    renderGrid();
+  })();
+</script>
+</body>
+</html>

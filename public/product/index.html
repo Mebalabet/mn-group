@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product — MN Group</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/base.css">
+<style>
+  .pd-page-wrap{ max-width:920px; margin:0 auto; padding:0 20px; }
+  .pd-page-card{
+    background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--glass-border); border-radius:var(--radius); overflow:hidden; margin-top:18px;
+  }
+  .pd-page-body{ padding:22px 24px 28px; }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section class="page-hero" style="padding-bottom:0;">
+  <div class="pd-page-wrap">
+    <div class="breadcrumb"><a href="/">Home</a> / <a href="/products">Products</a> / <span id="pdBreadcrumbName">Product</span></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="pd-page-wrap" id="pdPageRoot">
+    <div class="pd-page-card"><div class="pd-page-body"><p class="sell-note">Loading product…</p></div></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<div id="site-overlays"></div>
+
+<script src="/assets/js/shared.js"></script>
+<script src="/assets/js/ai-widget.js"></script>
+<script src="/assets/js/layout.js"></script>
+<script>
+  // The id comes from the URL path itself (no server-side product-detail
+  // API needed — we already fetch the full catalog via GET /api/products
+  // for the Home/Products pages, and select the requested id client-side,
+  // per the migration spec).
+  function currentProductId(){
+    const parts = location.pathname.split('/').filter(Boolean); // ['product', ':id']
+    return parts.length >= 2 ? decodeURIComponent(parts[1]) : null;
+  }
+
+  function renderProductPage(){
+    const root = document.getElementById('pdPageRoot');
+    const id = currentProductId();
+
+    if(!id){
+      root.innerHTML = `<div class="pd-page-card"><div class="pd-page-body"><h2 class="display" style="font-size:1.2rem;">No product specified</h2><p class="sell-note">Go back to <a href="/products" style="color:var(--accent-blue);">all products</a>.</p></div></div>`;
+      return;
+    }
+    if(productsLoadError){
+      root.innerHTML = `<div class="pd-page-card"><div class="pd-page-body"><h2 class="display" style="font-size:1.2rem;">Couldn't load this product</h2><p class="sell-note">Check your connection and <a href="javascript:location.reload()" style="color:var(--accent-blue);">try again</a>.</p></div></div>`;
+      return;
+    }
+    if(!productsLoaded){
+      root.innerHTML = `<div class="pd-page-card"><div class="pd-page-body"><p class="sell-note">Loading product…</p></div></div>`;
+      return;
+    }
+    const p = PRODUCTS.find(x=>x.id===id);
+    if(!p){
+      root.innerHTML = `<div class="pd-page-card"><div class="pd-page-body"><h2 class="display" style="font-size:1.2rem;">Product not found</h2><p class="sell-note">It may have been removed or is no longer listed. <a href="/products" style="color:var(--accent-blue);">Browse all products</a>.</p></div></div>`;
+      return;
+    }
+
+    document.title = p.name + ' — MN Group';
+    document.getElementById('pdBreadcrumbName').textContent = p.name;
+    const inCart = !!state.cart[id];
+    root.innerHTML = `
+      <div class="pd-page-card">
+        <div class="pd-swatch"><img src="${catImg('p-'+p.id,900,506)}" alt="" onerror="this.style.display='none'"></div>
+        <div class="pd-page-body">
+          <div class="pd-cat">${catLabel(p.cat)} · sold by ${esc(p.seller)}</div>
+          <h1 class="pd-title display">${esc(p.name)}</h1>
+          <div class="pd-seller">${starRow(p.rating)} ${p.rating} rating from ${p.reviews} buyers</div>
+          <div class="pd-price mono">₹${Number(p.price).toFixed(2)}</div>
+          <div class="pd-desc">${esc(p.desc)}</div>
+          <div class="pd-specs">${Object.entries(p.specs).map(([k,v])=>`<div class="pd-spec-row"><span>${esc(k)}</span><span>${esc(v)}</span></div>`).join('')}</div>
+          <div class="pd-actions">
+            <button class="add-btn ${inCart?'added':''}" id="pdPageAddBtn" style="padding:13px;">${inCart?'Added ✓':'Add to cart'}</button>
+            <button class="add-btn buy-btn" style="padding:13px;" id="pdPageBuyBtn">${p.payhipUrl?'Buy securely':'Buy now'}</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('pdPageAddBtn').onclick = ()=>{ addToCart(id); renderProductPage(); };
+    document.getElementById('pdPageBuyBtn').onclick = ()=>{ if(p.payhipUrl){ window.location.href=p.payhipUrl; return; } if(!state.cart[id]) addToCart(id); openCheckout(); };
+  }
+
+  (async ()=>{
+    await loadProducts();
+    renderProductPage();
+  })();
+</script>
+</body>
+</html>
